@@ -1,0 +1,16 @@
+{
+  "@microsoft/generator-sharepoint": {
+    "plusBeta": false,
+    "isCreatingSolution": true,
+    "version": "1.15.2",
+    "libraryName": "cs-ppap",
+    "libraryId": "396435cb-ebf4-472c-b752-a6148fe25ddc",
+    "environment": "spo",
+    "packageManager": "npm",
+    "solutionName": "CS_PPAP",
+    "solutionShortDescription": "CS_PPAP description",
+    "skipFeatureDeployment": true,
+    "isDomainIsolated": false,
+    "componentType": "webpart"
+  }
+}

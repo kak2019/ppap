@@ -1,0 +1,40 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/spfx-build/package-solution.schema.json",
+  "solution": {
+    "name": "cs-ppap-client-side-solution",
+    "id": "396435cb-ebf4-472c-b752-a6148fe25ddc",
+    "version": "1.0.0.0",
+    "includeClientSideAssets": true,
+    "skipFeatureDeployment": true,
+    "isDomainIsolated": false,
+    "developer": {
+      "name": "",
+      "websiteUrl": "",
+      "privacyUrl": "",
+      "termsOfUseUrl": "",
+      "mpnId": "Undefined-1.15.2"
+    },
+    "metadata": {
+      "shortDescription": {
+        "default": "CS_PPAP description"
+      },
+      "longDescription": {
+        "default": "CS_PPAP description"
+      },
+      "screenshotPaths": [],
+      "videoUrl": "",
+      "categories": []
+    },
+    "features": [
+      {
+        "title": "cs-ppap Feature",
+        "description": "The feature that activates elements of the cs-ppap solution.",
+        "id": "e329948d-395b-41e6-9767-625fb14c8dae",
+        "version": "1.0.0.0"
+      }
+    ]
+  },
+  "paths": {
+    "zippedPackage": "solution/cs-ppap.sppkg"
+  }
+}
