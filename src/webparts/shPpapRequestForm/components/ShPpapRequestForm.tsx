@@ -2,9 +2,13 @@ import * as React from 'react';
 import styles from './ShPpapRequestForm.module.scss';
 import { IShPpapRequestFormProps } from './IShPpapRequestFormProps';
 import { escape } from '@microsoft/sp-lodash-subset';
-import { PrimaryButton } from "office-ui-fabric-react";
+import { INavLinkGroup, Nav, PrimaryButton, Stack, StackItem } from "office-ui-fabric-react";
 import { getSP } from "../common/pnpjsConfig";
 import { SPFI, spfi } from "@pnp/sp";
+import SubmissionListView from './SubmitRequest/ListViewSubmit/SubmissionListView';
+import PlannedWeek from './UpdatePlannedWeek/PlannedWeek'
+import { HashRouter, Routes, Route} from 'react-router-dom';
+
 
 interface IDocItem {Id:number,FileLeafRef:string}
 interface IShPpapRequestFormState { items: IDocItem[] }
@@ -29,43 +33,34 @@ export default class ShPpapRequestForm extends React.Component<IShPpapRequestFor
       userDisplayName
     } = this.props;
 
+    const group: INavLinkGroup[] = [{
+      links:[{name: "Update PPAP week", url: "#/PlannedWeek" },
+    {name: "Submit a request", url: "#/SubmissionListView"}]
+    }]
+    
     return (
+    
       <section className={`${styles.shPpapRequestForm} ${hasTeamsContext ? styles.teams : ''}`}>
-        <div className={styles.welcome}>
-          <img alt="" src={isDarkTheme ? require('../assets/welcome-dark.png') : require('../assets/welcome-light.png')} className={styles.welcomeImage} />
-          <h2>Well done, {escape(userDisplayName)}!</h2>
-          <div>{environmentMessage}</div>
-          <div>Web part property value: <strong>{escape(description)}</strong></div>
-        </div>
-        <div>
-          <PrimaryButton onClick={() => this.sampleBtnClick()}>
-            PnP JS Sample
-          </PrimaryButton>
+        <HashRouter> 
+        <Stack horizontal>
+          <Nav groups={group} ></Nav>
+          <StackItem>
+            <Routes>
+              <Route path="/PlannedWeek" 
+               element={<PlannedWeek description={""} isDarkTheme={false} environmentMessage={""} hasTeamsContext={false} userDisplayName={""} />}>
+             </Route>
+             <Route path="/SubmissionListView" 
+              element={<SubmissionListView isDarkTheme={false} hasTeamsContext={false} />}>
 
-          <ul className={styles.links}>
-          {this.state.items.map((docItem,idx) =>{
-              return (
-                <li key={docItem.Id}>{docItem.FileLeafRef}</li>
-              )
-            })}
-          </ul>
-        </div>
+             </Route>
+            </Routes>
+        </StackItem>
+        </Stack>
+        
+      </HashRouter>
       </section>
+           
     );
   }
-  async sampleBtnClick(): Promise<void> {
-    const sp = spfi(this._sp);
-    try {
-      const response = await sp.web.lists.getByTitle("Documents").items.select("Id", "FileLeafRef")();
-      const items = response.map( (item:IDocItem) => {
-        return {
-          Id:item.Id,
-          FileLeafRef:item.FileLeafRef
-        };
-      });
-      this.setState({items});
-    } catch (err) {
-      console.error(err);
-    }
-  }
+  
 }

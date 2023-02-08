@@ -1,15 +1,23 @@
 @import '~office-ui-fabric-react/dist/sass/References.scss';
 
 .shPpapRequestForm {
-  overflow: hidden;
+  //overflow: hidden;
   padding: 1em;
   color: "[theme:bodyText, default: #323130]";
   color: var(--bodyText);
   &.teams {
     font-family: $ms-font-family-fallbacks;
   }
+  overflow-x: auto;
+  overflow-y: hidden;
+  white-space: nowrap;
 }
 
+#root{
+  overflow-x: auto;
+  overflow-y: hidden;
+  white-space: nowrap;
+}
 .welcome {
   text-align: center;
 }
