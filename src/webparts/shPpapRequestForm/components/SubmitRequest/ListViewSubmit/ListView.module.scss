@@ -1,0 +1,77 @@
+@import '~office-ui-fabric-react/dist/sass/References.scss';
+
+.shPpapRequestFormWebPart {
+  overflow: hidden;
+  padding: 1em;
+  color: "[theme:bodyText, default: #323130]";
+  color: var(--bodyText);
+  &.teams {
+    font-family: $ms-font-family-fallbacks;
+  }
+  overflow-x: auto;
+  overflow-y: hidden;
+  white-space: nowrap;
+}
+
+.button{
+  font-weight: bold;
+  font-size: 17px;
+  float: right;
+}
+.selectedItems{
+  overflow-x: auto;
+  overflow-y: hidden;
+  white-space: nowrap;
+}
+.selectedItems th{
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-size: 15px;
+  font-weight: 600;
+  padding: 4px;
+ // background-color: #fcfbfa;
+  line-height: inherit;
+}
+.selectedItems td{
+   font-size: 14px;
+   padding: 5px;
+  vertical-align: top;
+  min-height: 30px;
+}
+.inputFields{
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+  padding: 6px;
+
+}
+.listView {
+  font-size: 10px;
+}
+.emptyMessage{
+  font-size: 16px;
+  text-align: center;
+  font-weight: 450;
+}
+.header{
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-size: 20px;
+  //font-weight: 100;
+  font-weight: bold;
+}
+.listView_fa3d26af{
+  font-size: 20px;
+
+}
+.links {
+  a {
+    text-decoration: none;
+    color: "[theme:link, default:#03787c]";
+    color: var(--link); // note: CSS Custom Properties support is limited to modern browsers only
+
+    &:hover {
+      text-decoration: underline;
+      color: "[theme:linkHovered, default: #014446]";
+      color: var(--linkHovered); // note: CSS Custom Properties support is limited to modern browsers only
+    }
+  }
+}

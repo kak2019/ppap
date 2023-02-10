@@ -9,7 +9,8 @@ import { BaseClientSideWebPart } from '@microsoft/sp-webpart-base';
 import { IReadonlyTheme } from '@microsoft/sp-component-base';
 
 import * as strings from 'ShPpapRequestFormWebPartStrings';
-import ShPpapRequestForm from './components/ShPpapRequestFormWebPart';
+//import ShPpapRequestForm from './components/ShPpapRequestFormWebPart';
+import ShPpapRequestForm from './components/ShPpapRequestForm';
 import { IShPpapRequestFormProps } from './components/IShPpapRequestFormProps';
 import PnPTelemetry from "@pnp/telemetry-js";
 import { getSP } from './common/pnpjsConfig';
