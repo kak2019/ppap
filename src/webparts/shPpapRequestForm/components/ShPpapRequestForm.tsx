@@ -8,7 +8,7 @@ import { SPFI, spfi } from "@pnp/sp";
 import SubmissionListView from './SubmitRequest/ListViewSubmit/SubmissionListView';
 import PlannedWeek from './UpdatePlannedWeek/PlannedWeek'
 import { HashRouter, Routes, Route} from 'react-router-dom';
-
+import Renderdemo from './UploadFile/Renderdemo';
 
 interface IDocItem {Id:number,FileLeafRef:string}
 interface IShPpapRequestFormState { items: IDocItem[] }
@@ -35,7 +35,8 @@ export default class ShPpapRequestForm extends React.Component<IShPpapRequestFor
 
     const group: INavLinkGroup[] = [{
       links:[{name: "Update PPAP week", url: "#/PlannedWeek" },
-    {name: "Submit a request", url: "#/SubmissionListView"}]
+    {name: "Submit a request", url: "#/SubmissionListView"},
+    {name: "Upload Files", url: "#/Uploadfile"}]
     }]
     
     return (
@@ -51,6 +52,10 @@ export default class ShPpapRequestForm extends React.Component<IShPpapRequestFor
              </Route>
              <Route path="/SubmissionListView" 
               element={<SubmissionListView isDarkTheme={false} hasTeamsContext={false} />}>
+
+             </Route>
+             <Route path="/Uploadfile" 
+              element={<Renderdemo/>}>
 
              </Route>
             </Routes>
