@@ -103,7 +103,7 @@ export default class ShPpapRequestFormWebPart extends React.Component<IShPpapReq
       >
        <div>
           <PrimaryButton onClick={() => this.sampleBtnClick()}>
-            PnP JS Sample
+            Get Orders Data
           </PrimaryButton>
 </div>
 <br></br>

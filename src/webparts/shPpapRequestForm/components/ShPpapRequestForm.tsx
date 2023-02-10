@@ -2,7 +2,7 @@ import * as React from 'react';
 import styles from './ShPpapRequestForm.module.scss';
 import { IShPpapRequestFormProps } from './IShPpapRequestFormProps';
 import { escape } from '@microsoft/sp-lodash-subset';
-import { INavLinkGroup, Nav, PrimaryButton, Stack, StackItem } from "office-ui-fabric-react";
+import { INavLinkGroup, Nav, PrimaryButton, Stack, StackItem, Pivot, PivotItem } from "office-ui-fabric-react";
 import { getSP } from "../common/pnpjsConfig";
 import { SPFI, spfi } from "@pnp/sp";
 import SubmissionListView from './SubmitRequest/ListViewSubmit/SubmissionListView';
@@ -33,16 +33,27 @@ export default class ShPpapRequestForm extends React.Component<IShPpapRequestFor
       userDisplayName
     } = this.props;
 
-    const group: INavLinkGroup[] = [{
-      links:[{name: "Update PPAP week", url: "#/PlannedWeek" },
-    {name: "Submit a request", url: "#/SubmissionListView"},
-    {name: "Upload Files", url: "#/Uploadfile"}]
-    }]
+    // const group: INavLinkGroup[] = [{
+    //   links:[{name: "Update PPAP week", url: "#/PlannedWeek" },
+    // {name: "Submit a request", url: "#/SubmissionListView"},
+    // {name: "Upload Files", url: "#/Uploadfile"}]
+    // }]
     
     return (
     
       <section className={`${styles.shPpapRequestForm} ${hasTeamsContext ? styles.teams : ''}`}>
-        <HashRouter> 
+        <Pivot>
+          <PivotItem headerText='PlannedWeek'>
+              <PlannedWeek description={""} isDarkTheme={false} environmentMessage={""} hasTeamsContext={false} userDisplayName={""} />
+          </PivotItem>
+          <PivotItem headerText='SubmissionListView'>
+              <SubmissionListView isDarkTheme={false} hasTeamsContext={false} />
+          </PivotItem>
+          <PivotItem headerText='Uploadfile'>
+              <Renderdemo/>
+          </PivotItem>
+        </Pivot> 
+        {/* <HashRouter> 
         <Stack horizontal>
           <Nav groups={group} ></Nav>
           <StackItem>
@@ -62,7 +73,7 @@ export default class ShPpapRequestForm extends React.Component<IShPpapRequestFor
         </StackItem>
         </Stack>
         
-      </HashRouter>
+      </HashRouter> */}
       </section>
            
     );
