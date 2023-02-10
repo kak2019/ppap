@@ -50,7 +50,7 @@ export default class ShPpapRequestForm extends React.Component<IShPpapRequestFor
                element={<PlannedWeek description={""} isDarkTheme={false} environmentMessage={""} hasTeamsContext={false} userDisplayName={""} />}>
              </Route>
              <Route path="/SubmissionListView" 
-              element={<SubmissionListView isDarkTheme={false} hasTeamsContext={false} />}>
+              element={<SubmissionListView hasfilled={false} />}>
 
              </Route>
             </Routes>

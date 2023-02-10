@@ -88,18 +88,13 @@ export default class ShPpapRequestFormWebPart extends React.Component<IShPpapReq
 
   public render(): React.ReactElement<IShPpapRequestFormWebPartProps> {
     const {
-     // description,
-      isDarkTheme,
-      //environmentMessage,
-      hasTeamsContext,
-     // userDisplayName,
+    hasfilled,
+    
     } = this.props;
 
     return (
       <section id="root"
-        className={`${styles.shPpapRequestFormWebPart} ${
-          hasTeamsContext ? styles.teams : ""
-        }`}
+        className={`${styles.shPpapRequestFormWebPart}`}
       >
        <div>
           <PrimaryButton onClick={() => this.sampleBtnClick()}>
@@ -186,7 +181,7 @@ export default class ShPpapRequestFormWebPart extends React.Component<IShPpapReq
       </div>}
         <br/>
         <div>
-          <PrimaryButton className={styles.button} onClick={() => this.updateItems()}>Save and Upload Documents</PrimaryButton>
+          <PrimaryButton className={`${styles.button}`} onClick={() => this.updateItems()}>Save and Upload Documents</PrimaryButton>
         </div>
       </section>
     );
