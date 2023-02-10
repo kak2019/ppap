@@ -4,4 +4,5 @@ export interface IShPpapRequestFormProps {
   environmentMessage: string;
   hasTeamsContext: boolean;
   userDisplayName: string;
+  context:any
 }

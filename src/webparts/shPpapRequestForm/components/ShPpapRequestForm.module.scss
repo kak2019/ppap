@@ -5,6 +5,7 @@
   padding: 1em;
   color: "[theme:bodyText, default: #323130]";
   color: var(--bodyText);
+
   &.teams {
     font-family: $ms-font-family-fallbacks;
   }
@@ -31,4 +32,39 @@
       color: var(--linkHovered); // note: CSS Custom Properties support is limited to modern browsers only
     }
   }
+}
+
+.custom-file-upload {
+  //border: 1px solid #ccc;
+  //display: inline-block;
+  float: left;
+  //padding: 6px 12px;
+  cursor: pointer;
+  text-Align: "left";
+  width: 100%;
+
+}
+
+.icon {
+  font-size: '50px',
+}
+
+.title {
+  font-size: large;
+  font-weight: 700;
+}
+
+.tdsetting {
+  height: 16;
+  text-align: left;
+  max-width: 300px;
+  min-width: 300px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  -o-text-overflow: ellipsis;
+  -icab-text-overflow: ellipsis;
+  -khtml-text-overflow: ellipsis;
+  -moz-text-overflow: ellipsis;
+  -webkit-text-overflow: ellipsis;
 }

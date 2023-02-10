@@ -9,10 +9,13 @@ import { BaseClientSideWebPart } from '@microsoft/sp-webpart-base';
 import { IReadonlyTheme } from '@microsoft/sp-component-base';
 
 import * as strings from 'ShPpapRequestFormWebPartStrings';
-import ShPpapRequestForm from './components/ShPpapRequestForm';
+import ShPpapRequestForm from './components/ShPpapRequestFormWebPart';
 import { IShPpapRequestFormProps } from './components/IShPpapRequestFormProps';
 import PnPTelemetry from "@pnp/telemetry-js";
 import { getSP } from './common/pnpjsConfig';
+
+
+
 
 export interface IShPpapRequestFormWebPartProps {
   description: string;
@@ -27,16 +30,18 @@ export default class ShPpapRequestFormWebPart extends BaseClientSideWebPart<IShP
     const telemetry = PnPTelemetry.getInstance();
     telemetry.optOut();
     const element: React.ReactElement<IShPpapRequestFormProps> = React.createElement(
+      //ShPpapRequestForm,
       ShPpapRequestForm,
       {
         description: this.properties.description,
         isDarkTheme: this._isDarkTheme,
         environmentMessage: this._environmentMessage,
         hasTeamsContext: !!this.context.sdks.microsoftTeams,
-        userDisplayName: this.context.pageContext.user.displayName
+        userDisplayName: this.context.pageContext.user.displayName,
+        context:this.context
       }
     );
-
+      
     ReactDom.render(element, this.domElement);
   }
 
