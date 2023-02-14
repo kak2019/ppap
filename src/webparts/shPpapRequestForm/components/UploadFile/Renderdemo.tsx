@@ -5,8 +5,13 @@ import styles from "../ShPpapRequestForm.module.scss";
 import FileUploadMultiple from ".//Uploadfilenew";
 import MultiFileUploadComponent from ".//MultiFileUploadComponent/MultiFileUploadComponent";
 
+import { ChangeEvent, useEffect, useState } from 'react';
 function Renderdemo(){
-
+  const [parentCount, setParentCountt] = useState<number>(0);
+  
+  const getChildCount = (val: number) => {
+    setParentCountt(val);
+  };
 return(
 <section id="root">
         <div className={styles.welcome}>
@@ -18,7 +23,9 @@ return(
             titleDiscription="  (UD Released drawing,PVP)"
             checkboxTitle="Mandatory"
             mandatoryBool={true}
-            uploadFilePath="Upload file/202302/1. Design Records" fileUploadControlBool={true}></FileUploadMultiple>
+            uploadFilePath="Upload file/202302/1. Design Records" fileUploadControlBool={true}
+            getCount={getChildCount}
+            ></FileUploadMultiple>
 
          <FileUploadMultiple
             mainTitle="2.Engineering Change Documents, if any  "

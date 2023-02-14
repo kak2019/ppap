@@ -153,11 +153,7 @@ function MultiFileUploadComponent(props:any){
       {/* <hr style={{ height: 1, color: 'black' }} /> */}
       {/* <Label>ABC</Label> */}
       <div style={{textAlign: "left"}}><span style={{fontWeight:700}}>{childTtitle}</span></div>
-      {fileUploadControlBool ? <label  className={styles['custom-file-upload']} style={{display:checkboxState}}><Icon iconName='OpenFile' className={styles.icon} />File<input type="file" onChange={handleFileChange} multiple style={{ display: "none" }} />
-
-      </label> :
-        <div><label style={{ textAlign: "left", float: "left", width: 150 ,display:checkboxState}}>JIRA Number</label> <input id='JiraInput' type='text'  onChange={(e)=>onchange_inputValue(e)} style={{ textAlign: "left", float: "left", height: 18 ,display:checkboxState}}></input></div>}
-      <br></br>
+      
       {/* 展示 从文件夹展示的数据 */}
       <div>
 
@@ -192,7 +188,10 @@ function MultiFileUploadComponent(props:any){
         </div>
         }
       </div>
-      {files.length > 0 && <hr style={{display:checkboxState}}></hr>}
+      
+
+
+      {/* {files.length > 0 && <hr style={{display:checkboxState}}></hr>} */}
 
       <div style={{ textAlign: "left" ,display:checkboxState}}>
         {files.length > 0 ? <table >
@@ -223,6 +222,11 @@ function MultiFileUploadComponent(props:any){
         ))}
       </ul> */}
       </div>
+      {fileUploadControlBool ? <label  className={styles['custom-file-upload']} style={{display:checkboxState}}><Icon iconName='Attach' className={styles.icon} />Select Files<input type="file" onChange={handleFileChange} multiple style={{ display: "none" }} />
+
+      </label> :
+        <div><label style={{ textAlign: "left", float: "left", width: 150 ,display:checkboxState}}>JIRA Number</label> <input id='JiraInput' type='text'  onChange={(e)=>onchange_inputValue(e)} style={{ textAlign: "left", float: "left", height: 18 ,display:checkboxState}}></input></div>}
+      <br></br>
       <br></br>
       {!fileUploadControlBool ?<div style={{ textAlign: 'left',display:checkboxState }}><PrimaryButton onClick={saveInputText} disabled={jiraInputValue==null} >Save Jira</PrimaryButton></div>:<div style={{ textAlign: 'left',display:checkboxState }}><PrimaryButton onClick={handleUploadClick} disabled={files.length <= 0} >Save</PrimaryButton></div>}
       <br ></br>
