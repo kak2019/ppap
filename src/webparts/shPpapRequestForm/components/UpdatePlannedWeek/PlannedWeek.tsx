@@ -2,7 +2,7 @@ import * as React from "react";
 import styles from "./PlannedWeek.module.scss";
 import { IShPpapRequestFormWebPartProps } from "./IPPAPWeekProps";
 import { escape } from "@microsoft/sp-lodash-subset";
-import { IconButton, PrimaryButton, TextField } from "office-ui-fabric-react";
+import { constructKeytip, IconButton, PrimaryButton, TextField } from "office-ui-fabric-react";
 import { getSP } from "../../common/pnpjsConfig";
 import { SPFI, spfi } from "@pnp/sp";
 import { ListView, IViewField, SelectionMode, GroupOrder, IGrouping } from "@pnp/spfx-controls-react/lib/ListView";
@@ -12,7 +12,7 @@ import { Icon } from 'office-ui-fabric-react/lib/Icon';
 
 
 interface IShPpapRequestFormWebPartState { items: IListItem[], paginatedItems: IListItem[] , selectedItems: any[]}
-interface IListItem { ID:string, ItemNbr: string, PPAPOrderNumber: string, ItemNm: string,SQANm:string, PARMANm:string, PPAPPartWeightCode:string, PPAPPartWeight:string, PPAPplannedweek:string }
+interface IListItem { ID:string, ItemNbr: string, PPAPOrderNumber: string, ItemNm: string,SQANm:string, PARMANm:string, PPAPPartWeightCode:string, PPAPPartWeight:string, PPAPplannedweek:string, Flag: boolean }
 
 export interface IListItemColl {  
   value: IListItem[];  
@@ -21,6 +21,9 @@ export interface IListItemColl {
 let arr: any[] =[];
 let unique: any[] =[];
 let currentPage = 1;
+let currentYear = new Date().getFullYear();
+const weekRegex = new RegExp(currentYear +'[1-52]');
+let saveFlag : boolean = false;
 
 //const DeleteIcon = () => <Icon iconName="Delete" />;
 const viewFields: IViewField[] = [{  
@@ -110,7 +113,7 @@ export default class ShPpapRequestFormWebPart extends React.Component<IShPpapReq
  
 <br/>
 <div className={styles.header}>
-      Select items from below to add to the PPAP request:
+      Select items from below to update PPAP planned week:
       <hr></hr>
     </div>
   <div className={styles.listView}>  
@@ -166,7 +169,7 @@ export default class ShPpapRequestFormWebPart extends React.Component<IShPpapReq
                   name="weight"
                   type="text"
                   onChange={(e) => this.onChangeWeek(e, item.ID, index)}
-                  placeholder="Type Weight"
+                  placeholder="eg. 202312"
                 /> </td>
                 
                 <td>
@@ -182,7 +185,7 @@ export default class ShPpapRequestFormWebPart extends React.Component<IShPpapReq
       </div>}
         <br></br>
         <div>
-          <PrimaryButton className={styles.button} onClick={() => this.updateItems()}>Save</PrimaryButton>
+          <PrimaryButton className={styles.button} disabled = {!saveFlag} onClick={() => this.updateItems()}>Save</PrimaryButton>
         </div>
       </section>
     );
@@ -208,12 +211,25 @@ export default class ShPpapRequestFormWebPart extends React.Component<IShPpapReq
   }
 
   public onChangeWeek= (e: any, ID: string, index: number) => {
-    unique[index].PPAPplannedweek = e.target.value;
-    this.setState({selectedItems: unique});
-    console.log(this.state.selectedItems);
+    const valid =  weekRegex.test(e.target.value);
+    console.log ('regex result ' + valid);
+    if(valid){
+      unique[index].PPAPplannedweek = e.target.value;
+      unique[index].Flag = true;
+      this.setState({selectedItems: unique});
+      console.log(this.state.selectedItems);
+    }
+    this.checkSave();
   }
 
-  
+  public checkSave()
+  {
+    let flag = true;
+    unique.forEach(item => {
+      flag = flag && item.Flag;
+    });
+    if(flag){saveFlag = true;}
+  }
   public _getSelection(items: any[]) {
     //console.log('Selected items:', items);
       arr.push(...items);
@@ -262,7 +278,8 @@ export default class ShPpapRequestFormWebPart extends React.Component<IShPpapReq
           ItemNm: item.ItemNm,
           PPAPPartWeightCode:item.PPAPPartWeightCode,
           PPAPPartWeight:item.PPAPPartWeight,
-          PPAPplannedweek:item.PPAPplannedweek
+          PPAPplannedweek:item.PPAPplannedweek,
+          Flag: false
         };
       });
       //console.log(items);

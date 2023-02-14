@@ -2,16 +2,18 @@ import * as React from "react";
 import styles from "./ListView.module.scss";
 import { IShPpapRequestFormWebPartProps } from "./IListViewProps";
 import { escape } from "@microsoft/sp-lodash-subset";
-import { IconButton, PrimaryButton, TextField } from "office-ui-fabric-react";
+import { IconButton, Link, PrimaryButton, TextField } from "office-ui-fabric-react";
 import { getSP } from "../../../common/pnpjsConfig";
 import { SPFI, spfi } from "@pnp/sp";
 import { ListView, IViewField, SelectionMode, GroupOrder, IGrouping } from "@pnp/spfx-controls-react/lib/ListView";
 import { Pagination } from "@pnp/spfx-controls-react/lib/pagination";
 //import { Icon } from '@fluentui/react/lib/Icon';
 import { Icon } from 'office-ui-fabric-react/lib/Icon';
+//import { Renderdemo } from '../../UploadFile/Renderdemo'
+
 interface IDocItem {Id:number,Title:string,ItemName:string}
 interface IShPpapRequestFormWebPartState { items: IListItem[], paginatedItems: IListItem[] , selectedItems: any[]}
-interface IListItem { ID:string, ItemNbr: string, PPAPOrderNumber: string, ItemNm: string,SQANm:string, PARMANm:string, PPAPPartWeightCode:string, PPAPPartWeight:string }
+interface IListItem { ID:string, ItemNbr: string, PPAPOrderNumber: string, ItemNm: string,SQANm:string, PARMANm:string, PPAPPartWeightCode:string, PPAPPartWeight:string, RevisionCode: string, DrawingVersion: string, Flag: boolean }
 
 export interface IListItemColl {  
   value: IListItem[];  
@@ -20,6 +22,8 @@ export interface IListItemColl {
 let arr: any[] =[];
 let unique: any[] =[];
 let currentPage = 1;
+let submitFlag : boolean = false;
+
 
 //const DeleteIcon = () => <Icon iconName="Delete" />;
 const viewFields: IViewField[] = [{  
@@ -146,6 +150,8 @@ export default class ShPpapRequestFormWebPart extends React.Component<IShPpapReq
                 <th>PARMA Name</th>
                 <th>Part Weight</th>
                 <th>Part Weight Code</th>
+                <th>Revision Code</th>
+                <th>Drawing Version</th>
             </tr>
           </thead>
         
@@ -166,7 +172,19 @@ export default class ShPpapRequestFormWebPart extends React.Component<IShPpapReq
                   name="weightCode"
                   type="text"
                   onChange={(e) => this.onChangeWeightCode(e, item.ID, index)}
-                  placeholder="Type Weight"
+                  placeholder="Type weight code"
+                /> </td>
+                <td>  <input className={styles.inputFields}
+                  name="weightCode"
+                  type="text"
+                  onChange={(e) => this.onChangeRevisionCode(e, item.ID, index)}
+                  placeholder="Type revision code"
+                /> </td>
+                <td>  <input className={styles.inputFields}
+                  name="weightCode"
+                  type="text"
+                  onChange={(e) => this.onChangeDrawingV(e, item.ID, index)}
+                  placeholder="Type drawing version"
                 /> </td>
                 <td>
                  <IconButton onClick={() => this.deleteItem( index)} iconProps={ {iconName: "Delete"}}/>
@@ -181,7 +199,10 @@ export default class ShPpapRequestFormWebPart extends React.Component<IShPpapReq
       </div>}
         <br/>
         <div>
-          <PrimaryButton className={`${styles.button}`} onClick={() => this.updateItems()}>Save and Upload Documents</PrimaryButton>
+          <Link to="/Renderdemo">
+          <PrimaryButton className={`${styles.button}`} disabled = {!submitFlag} onClick={() => this.updateItems()}>Create Submission</PrimaryButton>
+           </Link>
+          
         </div>
       </section>
     );
@@ -198,14 +219,19 @@ export default class ShPpapRequestFormWebPart extends React.Component<IShPpapReq
 
   public updateItems(){
     const list = this._sp.web.lists.getByTitle('GPS Orders');
+    const requestList = this._sp.web.lists.getByTitle('PPAP Requests');
     //console.log("Items to be updated here" )
+     //const val = this.createItem()
+    requestList.items.add({Status: "New"}).then(r => {console.log(r.data.ID)}) ;
     this.state.selectedItems.forEach((item) => {
         list.items.getById(item.ID).update({PPAPPartWeight: item.PPAPPartWeight, PPAPPartWeightCode: item.PPAPPartWeightCode}).then(b => {
           console.log(b);
         });
     })
+    
   }
 
+  
   public onChangeWeight= (e: any, ID: string, index: number) => {
     unique[index].PPAPPartWeight = e.target.value;
     this.setState({selectedItems: unique});
@@ -217,6 +243,19 @@ export default class ShPpapRequestFormWebPart extends React.Component<IShPpapReq
     unique[index].PPAPPartWeightCode = e.target.value;
     this.setState({selectedItems: unique})
    }
+
+   public onChangeRevisionCode= (e: any, ID: string, index: number) => {
+    unique[index].RevisionCode = e.target.value;
+    this.setState({selectedItems: unique});
+    console.log(this.state.selectedItems);
+  }
+
+  public onChangeDrawingV= (e: any, ID: string, index: number) => {
+    unique[index].DrawingVersion = e.target.value;
+    this.setState({selectedItems: unique});
+    console.log(this.state.selectedItems);
+  }
+
   public _getSelection(items: any[]) {
     //console.log('Selected items:', items);
       arr.push(...items);
@@ -232,7 +271,7 @@ export default class ShPpapRequestFormWebPart extends React.Component<IShPpapReq
      this.setState({
       selectedItems: unique
     });
-      
+      submitFlag = true;
    }
 
 
@@ -253,8 +292,9 @@ export default class ShPpapRequestFormWebPart extends React.Component<IShPpapReq
   async sampleBtnClick(): Promise<any> {
     const sp = spfi(this._sp);
     try {
-      const response =  await sp.web.lists.getByTitle("GPS Orders").items.select("ID", "ItemNm", "ItemNbr", "PARMANm","SQANm","PPAPOrderNumber","PPAPPartWeight","PPAPPartWeightCode").top(30)();
-      const items = response.map((item:IListItem) => {
+      // items: IListItem[] =[];
+      const response =  await sp.web.lists.getByTitle("GPS Orders").items.select("ID", "ItemNm", "ItemNbr", "PARMANm","SQANm","PPAPOrderNumber").top(30)();
+     const items = response.map((item:IListItem) => {
         return {
           ID:item.ID,
           PPAPOrderNumber:item.PPAPOrderNumber,
@@ -262,8 +302,11 @@ export default class ShPpapRequestFormWebPart extends React.Component<IShPpapReq
           SQANm:item.SQANm,
           PARMANm:item.PARMANm,
           ItemNm: item.ItemNm,
-          PPAPPartWeightCode:item.PPAPPartWeightCode,
-          PPAPPartWeight:item.PPAPPartWeight
+          PPAPPartWeightCode: "",
+          PPAPPartWeight:"",
+          RevisionCode : "",
+          DrawingVersion: "",
+          Flag: false
         };
       });
       //console.log(items);
