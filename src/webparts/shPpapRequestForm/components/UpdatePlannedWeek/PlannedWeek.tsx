@@ -12,7 +12,7 @@ import { Icon } from 'office-ui-fabric-react/lib/Icon';
 
 
 interface IShPpapRequestFormWebPartState { items: IListItem[], paginatedItems: IListItem[] , selectedItems: any[]}
-interface IListItem { ID:string, ItemNbr: string, PPAPOrderNumber: string, ItemNm: string,SQANm:string, PARMANm:string, PPAPPartWeightCode:string, PPAPPartWeight:string, PPAPplannedweek:string, Flag: boolean }
+interface IListItem { ID:string, ItemNbr: string, PPAPOrderNumber: string, ItemNm: string,SQANm:string, PARMANm:string, SQACd:string, PPAPplannedweek:string, PARMANbr:string, Flag: boolean }
 
 export interface IListItemColl {  
   value: IListItem[];  
@@ -22,7 +22,7 @@ let arr: any[] =[];
 let unique: any[] =[];
 let currentPage = 1;
 let currentYear = new Date().getFullYear();
-const weekRegex = new RegExp(currentYear +'[1-52]');
+const weekRegex = new RegExp(currentYear +'[0-5][0-9]');
 let saveFlag : boolean = false;
 
 //const DeleteIcon = () => <Icon iconName="Delete" />;
@@ -51,8 +51,8 @@ const viewFields: IViewField[] = [{
   maxWidth: 200  
 },  
 {  
-  name: "SQANm",  
-  displayName: "SQE Name",  
+  name: "PARMANbr",  
+  displayName: "PARMA Number",  
   isResizable: true,  
   sorting: true,  
   minWidth: 0,  
@@ -66,6 +66,30 @@ const viewFields: IViewField[] = [{
   minWidth: 0,  
   maxWidth: 150  
 },
+{  
+  name: "SQACd",  
+  displayName: "SQA Code",  
+  isResizable: true,  
+  sorting: true,  
+  minWidth: 0,  
+  maxWidth: 150  
+},
+{  
+  name: "SQANm",  
+  displayName: "SQA Name",  
+  isResizable: true,  
+  sorting: true,  
+  minWidth: 0,  
+  maxWidth: 150  
+},
+{  
+  name: "PPAPplannedweek",  
+  displayName: "PPAP Planned Week",  
+  isResizable: true,  
+  sorting: true,  
+  minWidth: 0,  
+  maxWidth: 150  
+}
 ]; 
 
 
@@ -152,7 +176,6 @@ export default class ShPpapRequestFormWebPart extends React.Component<IShPpapReq
             <tr> <th> Order ID</th> 
               <th>Part ID</th>
                 <th>Item Name</th>
-                <th>SQE Name</th>
                 <th>PARMA Name</th>
                 <th>PPAP Planned Week</th>
             </tr>
@@ -163,7 +186,6 @@ export default class ShPpapRequestFormWebPart extends React.Component<IShPpapReq
                 <td>{item.PPAPOrderNumber}</td>  
                 <td>{item.ItemNbr}</td>  
                 <td>{item.ItemNm}</td>
-                <td>{item.SQANm}</td>
                 <td>{item.PARMANm}</td>  
                 <td>  <input className={styles.inputFields}
                   name="weight"
@@ -207,7 +229,8 @@ export default class ShPpapRequestFormWebPart extends React.Component<IShPpapReq
         list.items.getById(item.ID).update({PPAPplannedweek: item.PPAPplannedweek}).then(b => {
           console.log(b);
         });
-    })
+    });
+    alert ('PPAP week updated for selected items')
   }
 
   public onChangeWeek= (e: any, ID: string, index: number) => {
@@ -218,6 +241,9 @@ export default class ShPpapRequestFormWebPart extends React.Component<IShPpapReq
       unique[index].Flag = true;
       this.setState({selectedItems: unique});
       console.log(this.state.selectedItems);
+    }
+    else{unique[index].Flag = false;
+      alert('Enter valid format, year followed by week number eg. 202341')
     }
     this.checkSave();
   }
@@ -267,7 +293,7 @@ export default class ShPpapRequestFormWebPart extends React.Component<IShPpapReq
   async sampleBtnClick(): Promise<any> {
     const sp = spfi(this._sp);
     try {
-      const response =  await sp.web.lists.getByTitle("GPS Orders").items.select("ID", "ItemNm", "ItemNbr", "PARMANm","SQANm","PPAPOrderNumber","PPAPPartWeight","PPAPPartWeightCode","PPAPplannedweek").top(30)();
+      const response =  await sp.web.lists.getByTitle("GPS Orders").items.select("ID", "ItemNm", "ItemNbr","PARMANbr","PARMANm","SQANm","SQACd","PPAPOrderNumber","PPAPplannedweek").top(30)();
       const items = response.map((item:IListItem) => {
         return {
           ID:item.ID,
@@ -276,9 +302,9 @@ export default class ShPpapRequestFormWebPart extends React.Component<IShPpapReq
           SQANm:item.SQANm,
           PARMANm:item.PARMANm,
           ItemNm: item.ItemNm,
-          PPAPPartWeightCode:item.PPAPPartWeightCode,
-          PPAPPartWeight:item.PPAPPartWeight,
+          SQACd:item.SQACd,         
           PPAPplannedweek:item.PPAPplannedweek,
+          PARMANbr:item.PARMANbr,
           Flag: false
         };
       });
