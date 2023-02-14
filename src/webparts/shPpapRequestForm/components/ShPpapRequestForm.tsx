@@ -47,7 +47,7 @@ export default class ShPpapRequestForm extends React.Component<IShPpapRequestFor
               <PlannedWeek description={""} isDarkTheme={false} environmentMessage={""} hasTeamsContext={false} userDisplayName={""} />
           </PivotItem>
           <PivotItem headerText='SubmissionListView'>
-              <SubmissionListView isDarkTheme={false} hasTeamsContext={false} />
+              <SubmissionListView hasfilled={false} />
           </PivotItem>
           <PivotItem headerText='Uploadfile'>
               <Renderdemo/>
