@@ -22,13 +22,12 @@ function FileUploadMultiple(props: any) {
   const [fileList, setFileList] = useState<FileList | any>(null);
   const [itemFolder, setFolderList] = useState<IFileInfo | any>(null);
   const [jiraInputValue, setjiraInputValue] = useState<string>(null);
-  const [checkboxState,setCheckboxState] = useState<string>(null)
-  const [checkboxBool,setcheckboxBool] = useState<Boolean>(null)
+  const [checkboxState, setCheckboxState] = useState<string>(null)
+  const [checkboxBool, setcheckboxBool] = useState<Boolean>(null)
   // var Refreshcode: number = Date.now();
   //const itemFolder:any =[]
   const _sp = getSP();
   const sp = spfi(_sp);
-  
   useEffect(() => {
     getFileInfoFromSPDoc();
     setcheckboxBool(false)
@@ -41,21 +40,21 @@ function FileUploadMultiple(props: any) {
     //console.log(fileList)
   };
 
-  const onclick_checkboxValue=()=>{
-    
+  const onclick_checkboxValue = () => {
+
     console.log(checkboxBool)
-    if(checkboxBool){
+    if (checkboxBool) {
       setCheckboxState("block")
-    }else{
+    } else {
       setCheckboxState("none")
     }
     setcheckboxBool(!checkboxBool)
   }
 
   //监听 jira输入框的值
-  const onchange_inputValue = (e:any) => {
+  const onchange_inputValue = (e: any) => {
     setjiraInputValue(e.target.value);
-    console.log("e :"+e.target.value)
+    console.log("e :" + e.target.value)
     console.log(jiraInputValue)
   }
 
@@ -68,7 +67,7 @@ function FileUploadMultiple(props: any) {
     });
 
     console.log(iar);
-    alert("save :"+iar)
+    alert("save :" + jiraInputValue)
 
   }
 
@@ -143,6 +142,12 @@ function FileUploadMultiple(props: any) {
   //console.log("DocFiles" +docFiles)
   return (
     <div>
+
+
+
+
+
+
       <div>
 
         <div style={{ textAlign: "left", float: "left" }}>
@@ -152,19 +157,14 @@ function FileUploadMultiple(props: any) {
         <div style={{ textAlign: "right", float: "right", justifyContent: "flex-end" }}>{mandatoryBool ? <span>{checkboxTitle}</span> : <div onChange={onclick_checkboxValue}><Checkbox label={checkboxTitle} ></Checkbox></div>}</div>
       </div>
       <br></br>
-      <hr style={{ height: 1, color: 'black' }} />
-      {/* <Label>ABC</Label> */}
-      {fileUploadControlBool ? <label  className={styles['custom-file-upload']} style={{display:checkboxState}}><Icon iconName='OpenFile' className={styles.icon} />File<input type="file" onChange={handleFileChange} multiple style={{ display: "none" }} />
 
-      </label> :
-        <div><label style={{ textAlign: "left", float: "left", width: 150 ,display:checkboxState}}>JIRA Number</label> <input id='JiraInput' type='text'  onChange={(e)=>onchange_inputValue(e)} style={{ textAlign: "left", float: "left", height: 18 ,display:checkboxState}}></input></div>}
       <br></br>
       {/* 展示 从文件夹展示的数据 */}
       <div>
 
-        {fileUploadControlBool && <hr style={{display:checkboxState}}></hr>}
-        {fileUploadControlBool && <div style={{ textAlign: "left",display:checkboxState }}>
-         {docFiles.length>0&& <table style={{ tableLayout: "fixed" ,display:checkboxState}}>
+        {fileUploadControlBool && <hr style={{ display: checkboxState }}></hr>}
+        {fileUploadControlBool && <div style={{ textAlign: "left", display: checkboxState }}>
+          {docFiles.length > 0 && <table style={{ tableLayout: "fixed", display: checkboxState }}>
             {/* <span>已经上传的文件</span> */}
             <thead style={{ textAlign: "left" }}>
               <tr> <th> File Name</th>
@@ -192,9 +192,12 @@ function FileUploadMultiple(props: any) {
         </div>
         }
       </div>
-      {files.length > 0 && <hr style={{display:checkboxState}}></hr>}
+      {/* <hr style={{ height: 1, color: 'black' }} /> */}
+      {/* <Label>ABC</Label> */}
+     
+      {/* {files.length > 0 && <hr style={{ display: checkboxState }}></hr>} */}
 
-      <div style={{ textAlign: "left" ,display:checkboxState}}>
+      <div style={{ textAlign: "left", display: checkboxState }}>
         {files.length > 0 ? <table >
           {/* <span>将要上传的文件</span> */}
           <thead style={{ textAlign: "left" }}>
@@ -223,10 +226,15 @@ function FileUploadMultiple(props: any) {
         ))}
       </ul> */}
       </div>
+      {fileUploadControlBool ? <label className={styles['custom-file-upload']} style={{ display: checkboxState }}><Icon iconName='Attach' className={styles.icon} />Select Files<input type="file" onChange={handleFileChange} multiple style={{ display: "none" }} />
+
+</label> :
+  <div><label style={{ textAlign: "left", float: "left", width: 150, display: checkboxState }}>JIRA Number</label> <input id='JiraInput' type='text' onChange={(e) => onchange_inputValue(e)} style={{ textAlign: "left", float: "left", height: 18, display: checkboxState }}></input></div>}
       <br></br>
-      {!fileUploadControlBool ?<div style={{ textAlign: 'left',display:checkboxState }}><PrimaryButton onClick={saveInputText} disabled={jiraInputValue==null} >Save Jira</PrimaryButton></div>:<div style={{ textAlign: 'left',display:checkboxState }}><PrimaryButton onClick={handleUploadClick} disabled={files.length <= 0} >Save</PrimaryButton></div>}
+      <br></br>
+      {!fileUploadControlBool ? <div style={{ textAlign: 'left', display: checkboxState }}><PrimaryButton onClick={saveInputText} disabled={jiraInputValue == null} >Save</PrimaryButton></div> : <div style={{ textAlign: 'left', display: checkboxState }}><PrimaryButton onClick={handleUploadClick} disabled={files.length <= 0} >Save</PrimaryButton></div>}
       <br ></br>
-      <hr style={{ height: 10, color: 'transparent', opacity: 0.0 ,display:checkboxState}}></hr>
+      <hr style={{ height: 10, color: 'transparent', opacity: 0.0, display: checkboxState }}></hr>
 
     </div>
 
