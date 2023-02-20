@@ -14,7 +14,7 @@ import { Item } from "@pnp/sp/items";
 
 interface IDocItem {Id:number,Title:string,ItemName:string}
 interface IShPpapRequestFormWebPartState { items: IListItem[], paginatedItems: IListItem[] , selectedItems: any[]}
-interface IListItem { ID:string, ItemNbr: string, PPAPOrderNumber: string, ItemNm: string,SQANm:string, PARMANm:string, PPAPPartWeightCode:string, PPAPPartWeight:string, RevisionCode: string, DrawingVersion: string, Flag: boolean }
+interface IListItem { ID:string, ItemNbr: string, PPAPOrderNumber: string, ItemNm: string,SQANm:string, PARMANm:string, PPAPPartWeightCode:string, PPAPPartWeight:string, RevisionCode: string, DrawingVersion: string, SQASection:string, SQACd:string, PPAPorderdate:string, PPAPOrderarrweek:string, PPAPapprovalweek:string, PPAP_x002d_Plan_x002d_Y:string, weightFlag:boolean, wcFlag:boolean, rcFlag:boolean, dvFlag:boolean, Flag: boolean }
 
 export interface IListItemColl {  
   value: IListItem[];  
@@ -24,6 +24,7 @@ let arr: any[] =[];
 let unique: any[] =[];
 let currentPage = 1;
 let submitFlag : boolean = false;
+let rcRegex = new RegExp('^[ABCP][0-9][0-9]');
 
 
 //const DeleteIcon = () => <Icon iconName="Delete" />;
@@ -33,7 +34,7 @@ const viewFields: IViewField[] = [{
   isResizable: true,  
   sorting: true,  
   minWidth: 0,  
-  maxWidth: 150  
+  maxWidth: 100  
 },  
 {  
   name: "ItemNbr",  
@@ -41,7 +42,7 @@ const viewFields: IViewField[] = [{
   isResizable: true,  
   sorting: true,  
   minWidth: 0,  
-  maxWidth: 200  
+  maxWidth: 100  
 },  
 {  
   name: "ItemNm",  
@@ -49,7 +50,7 @@ const viewFields: IViewField[] = [{
   isResizable: true,  
   sorting: true,  
   minWidth: 0,  
-  maxWidth: 200  
+  maxWidth: 150  
 },  
 {  
   name: "SQANm",  
@@ -65,8 +66,72 @@ const viewFields: IViewField[] = [{
   isResizable: true,  
   sorting: true,  
   minWidth: 0,  
+  maxWidth: 150,
+ },
+{  
+  name: "PARMANbr",  
+  displayName: "PARMA Number",  
+  isResizable: true,  
+  sorting: true,  
+  minWidth: 0,  
   maxWidth: 150  
 },
+{  
+  name: "SQASection",  
+  displayName: "SQA Section",  
+  isResizable: true,  
+  sorting: true,  
+  minWidth: 0,  
+  maxWidth: 150  
+},
+{  
+  name: "SQACd",  
+  displayName: "SQA Code",  
+  isResizable: true,  
+  sorting: true,  
+  minWidth: 0,  
+  maxWidth: 150  
+},
+{  
+  name: "PPAPorderdate",  
+  displayName: "PPAP Order Date",  
+  isResizable: true,  
+  sorting: true,  
+  minWidth: 0,  
+  maxWidth: 150  
+},
+{  
+  name: "PPAPOrderarrweek",  
+  displayName: "PPAP Order Arrival week",  
+  isResizable: true,  
+  sorting: true,  
+  minWidth: 0,  
+  maxWidth: 150  
+},
+{  
+  name: "PPAP_x002d_Plan_x002d_Y",  
+  displayName: "PPAP-Paln-Y",  
+  isResizable: true,  
+  sorting: true,  
+  minWidth: 0,  
+  maxWidth: 150  
+},
+{  
+  name: "RevisionCode",  
+  displayName: "Revision Code",  
+  isResizable: true,  
+  sorting: true,  
+  minWidth: 0,  
+  maxWidth: 150  
+},
+{  
+  name: "DrawingVersion",  
+  displayName: "Drawing Version",  
+  isResizable: true,  
+  sorting: true,  
+  minWidth: 0,  
+  maxWidth: 150  
+}
 ]; 
 
 
@@ -117,7 +182,7 @@ export default class ShPpapRequestFormWebPart extends React.Component<IShPpapReq
        items={this.state.paginatedItems}  
        viewFields={viewFields}  
        groupByFields={groupByFields}  
-       compact={true}  
+       //compact={true}  
        selectionMode={SelectionMode.multiple}  
        selection={this._getSelection.bind(this)}
        showFilter={true}  
@@ -222,43 +287,82 @@ export default class ShPpapRequestFormWebPart extends React.Component<IShPpapReq
 
   public updateItems(){
     const list = this._sp.web.lists.getByTitle('GPS Orders');
+    let reqID = this.createRequestID();
     const requestList = this._sp.web.lists.getByTitle('PPAP Requests');
     //console.log("Items to be updated here" )
      //const val = this.createItem()
-    requestList.items.add({Status: "New"}).then(r => {console.log(r.data.ID)}) ;
+    requestList.items.add({Status: "New", RequestID: reqID}).then(r => {console.log(r)}) ;
     this.state.selectedItems.forEach((item) => {
         list.items.getById(item.ID).update({PPAPPartWeight: item.PPAPPartWeight, PPAPPartWeightCode: item.PPAPPartWeightCode}).then(b => {
           console.log(b);
         });
     })
-    
+    alert('Your request is created with Request ID: ' + reqID + '.\n Please proceed to upload files')
+    unique = [];
+    this.setState({selectedItems: unique});
+    submitFlag = false;
+    console.log(submitFlag);
   }
 
+  public createRequestID(){
+    let date = new Date();
+          function pad2(n: any) {  // always returns a string
+          return (n < 10 ? '0' : '') + n;
+      }
+    return date.getFullYear() +
+               pad2(date.getMonth() + 1) + 
+               pad2(date.getDate()) +
+               pad2(date.getHours()) +
+               pad2(date.getMinutes()) +
+               pad2(date.getSeconds());
+  }
   
   public onChangeWeight= (e: any, ID: string, index: number) => {
     unique[index].PPAPPartWeight = e.target.value;
     this.setState({selectedItems: unique});
     console.log(this.state.selectedItems);
+    unique[index].weightFlag = true;
+    submitFlag = this.checkSubmit();
   }
 
   public onChangeWeightCode= (e: any, ID: string, index: number) => {
     
     unique[index].PPAPPartWeightCode = e.target.value;
     this.setState({selectedItems: unique})
+    unique[index].wcFlag =true;
+    submitFlag = this.checkSubmit();
    }
 
    public onChangeRevisionCode= (e: any, ID: string, index: number) => {
     unique[index].RevisionCode = e.target.value;
-    this.setState({selectedItems: unique});
-    console.log(this.state.selectedItems);
+    let valid= rcRegex.test(e.target.value);
+    //console.log(valid);
+    if(valid){
+      unique[index].rcFlag = true;
+      this.setState({selectedItems: unique});
+    }
+    else{
+      unique[index].rcFlag = false;
+    }
+    submitFlag = this.checkSubmit();
+    //console.log(this.state.selectedItems);
   }
 
   public onChangeDrawingV= (e: any, ID: string, index: number) => {
     unique[index].DrawingVersion = e.target.value;
+    unique[index].dvFlag = true;
     this.setState({selectedItems: unique});
     console.log(this.state.selectedItems);
+    submitFlag = this.checkSubmit();
   }
 
+  public checkSubmit(){
+      let flag = true
+      unique.forEach(item => {
+       flag = flag && item.weightFlag && item.wcFlag && item.rcFlag && item.dvFlag;
+      });
+      return flag;
+  }
   public _getSelection(items: any[]) {
     //console.log('Selected items:', items);
       arr.push(...items);
@@ -274,7 +378,7 @@ export default class ShPpapRequestFormWebPart extends React.Component<IShPpapReq
      this.setState({
       selectedItems: unique
     });
-      submitFlag = true;
+      submitFlag = this.checkSubmit();
    }
 
 
@@ -296,7 +400,7 @@ export default class ShPpapRequestFormWebPart extends React.Component<IShPpapReq
     const sp = spfi(this._sp);
     try {
       // items: IListItem[] =[];
-      const response =  await sp.web.lists.getByTitle("GPS Orders").items.select("ID", "ItemNm", "ItemNbr", "PARMANm","SQANm","PPAPOrderNumber").top(30)();
+      const response =  await sp.web.lists.getByTitle("GPS Orders").items.select("ID", "ItemNm", "ItemNbr", "PARMANm","SQANm","PPAPOrderNumber","PARMANbr","SQASection","SQACd","PPAPorderdate","PPAPOrderarrweek","PPAPapprovalweek","PPAP_x002d_Plan_x002d_Y","RevisionCode","DrawingVersion").top(30)();
      const items = response.map((item:IListItem) => {
         return {
           ID:item.ID,
@@ -305,11 +409,21 @@ export default class ShPpapRequestFormWebPart extends React.Component<IShPpapReq
           SQANm:item.SQANm,
           PARMANm:item.PARMANm,
           ItemNm: item.ItemNm,
+          SQASection: item.SQASection,
+          SQACd:item.SQACd,
+          PPAPorderdate:item.PPAPorderdate,
+          PPAPOrderarrweek:item.PPAPOrderarrweek,
+          PPAPapprovalweek:item.PPAPapprovalweek,
+          PPAP_x002d_Plan_x002d_Y:item.PPAP_x002d_Plan_x002d_Y,
           PPAPPartWeightCode: "",
           PPAPPartWeight:"",
-          RevisionCode : "",
-          DrawingVersion: "",
-          Flag: false
+          RevisionCode : item.RevisionCode,
+          DrawingVersion: item.DrawingVersion,
+          Flag: false,
+          weightFlag: false,
+          wcFlag:false,
+          rcFlag: false,
+          dvFlag: false
         };
       });
       //console.log(items);
