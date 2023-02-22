@@ -12,6 +12,12 @@ import { format, formatDistance, formatRelative, subDays } from 'date-fns'
 import styles from "../../ShPpapRequestForm.module.scss";
 import IconSelected from '../FileIcon/FileIconConponent';
 import { IItemAddResult } from '@pnp/sp/items';
+// TODO: 新增的fluentUI
+import { DetailsList, DetailsListLayoutMode, SelectionMode, IColumn } from '@fluentui/react/lib/DetailsList';
+import { TooltipHost } from '@fluentui/react';
+
+
+
 
 function MultiFileUploadComponent(props:any){
     const { mainTitle, titleDiscription, mandatoryBool, checkboxTitle, uploadFilePath, fileUploadControlBool  ,childTtitle} = props
@@ -134,6 +140,156 @@ function MultiFileUploadComponent(props:any){
   
       //handleFileChangeclear;
     };
+    const columns: IColumn[] = [
+      {
+        key: 'column1',
+        name: 'File Name',
+        iconName: 'Page',
+        isIconOnly: true,
+        fieldName: 'name',
+        minWidth: 16,
+        maxWidth: 16,
+        onRender: (item: any) => {
+            // TODO: 如展示不正确 修改这里
+            const fileType = item?.Name.slice(item?.Name.lastIndexOf(".")+1);
+            const fileicon = `https://res-1.cdn.office.net/files/fabric-cdn-prod_20221209.001/assets/item-types/16/${fileType}.svg`;
+            
+          return (
+              <TooltipHost content={`${fileType} file`}>
+                <img src={fileicon} />
+              </TooltipHost>
+            )
+        },
+      },
+      {
+        key: 'column2',
+        name: 'File Name',
+        fieldName: 'Name',
+        minWidth: 210,
+        maxWidth: 350,
+        isRowHeader: true,
+        isResizable: true,
+        isSorted: true,
+        isSortedDescending: false,
+        data: 'string',
+        isPadded: true,
+        onRender: (item: any) => {
+            // TODO: 如展示不正确 修改这里
+          return <span>{item.Name}</span>
+        },
+      },
+      {
+        key: 'column3',
+        name: 'Date Modified',
+        fieldName: 'dateModifiedValue',
+        minWidth: 70,
+        maxWidth: 90,
+        isResizable: true,
+        data: 'number',
+        onRender: (item) => {
+            // TODO: 如展示不正确 修改这里
+          return <span>{format(new Date(item.TimeLastModified), "yyyy/MM/dd hh:mm:ss")}</span>;
+        },
+        isPadded: true,
+      },
+      {
+        key: 'column4',
+        name: 'File Size',
+        fieldName: 'fileSizeRaw',
+        minWidth: 70,
+        maxWidth: 90,
+        isResizable: true,
+        isCollapsible: true,
+        data: 'number',
+        onRender: (item) => {
+            // TODO: 如展示不正确 修改这里
+          return <span>{Math.floor(Number(item.Length) / 1024) + "KB"}</span>;
+        },
+      },
+       {
+        key: 'column5',
+        name: 'Opreation',
+        fieldName: 'fileSizeRaw',
+        minWidth: 70,
+        maxWidth: 90,
+        isResizable: true,
+        isCollapsible: true,
+        data: 'number',
+        onRender: (item) => {
+          // TODO: 用个icon替换
+          return <span onClick={() => deleteFileFromSPDoc(item.Name)}>X</span>;
+        },
+      },
+    ];
+    
+    
+    const columnsUpload: IColumn[] = [
+      {
+        key: 'column1',
+        name: 'File Name',
+        iconName: 'Page',
+        isIconOnly: true,
+        fieldName: 'name',
+        minWidth: 16,
+        maxWidth: 16,
+        onRender: (item: any) => {
+            // TODO: 如展示不正确 修改这里
+            const fileType = item?.name.slice(item?.name.lastIndexOf(".")+1);
+            const fileicon = `https://res-1.cdn.office.net/files/fabric-cdn-prod_20221209.001/assets/item-types/16/${fileType}.svg`;
+            return (
+              <TooltipHost content={`${fileType} file`}>
+                <img src={fileicon} />
+              </TooltipHost>
+            )
+        },
+      },
+      {
+        key: 'column2',
+        name: 'File Name',
+        fieldName: 'Name',
+        minWidth: 210,
+        maxWidth: 350,
+        isRowHeader: true,
+        isResizable: true,
+        isSorted: true,
+        isSortedDescending: false,
+        data: 'string',
+        isPadded: true,
+        onRender: (item: any) => {
+            // TODO: 如展示不正确 修改这里
+          return <span>{item.name}</span>
+        },
+      },
+      {
+        key: 'column3',
+        name: 'Date Modified',
+        fieldName: 'dateModifiedValue',
+        minWidth: 70,
+        maxWidth: 90,
+        isResizable: true,
+        data: 'number',
+        onRender: (item) => {
+            // TODO: 如展示不正确 修改这里
+          return <span>{format(new Date(), "yyyy/MM/dd hh:mm:ss")}</span>;
+        },
+        isPadded: true,
+      },
+      {
+        key: 'column4',
+        name: 'File Size',
+        fieldName: 'fileSizeRaw',
+        minWidth: 70,
+        maxWidth: 90,
+        isResizable: true,
+        isCollapsible: true,
+        data: 'number',
+        onRender: (item) => {
+            // TODO: 如展示不正确 修改这里
+          return <span>{Math.floor(Number(item.size) / 1024) + "KB"}</span>;
+        },
+      },
+    
+    ];
   
   
     const files = fileList ? [...fileList] : [];
@@ -144,85 +300,55 @@ function MultiFileUploadComponent(props:any){
       <div>
 
         <div style={{ textAlign: "left", float: "left" }}>
-
-          {/* <span><span className={styles.title}>{mainTitle}</span>{titleDiscription} </span> */}
         </div>
        
       </div>
       <br></br>
-      {/* <hr style={{ height: 1, color: 'black' }} /> */}
-      {/* <Label>ABC</Label> */}
-      <div style={{textAlign: "left"}}><span style={{fontWeight:700}}>{childTtitle}</span></div>
-      {fileUploadControlBool ? <label  className={styles['custom-file-upload']} style={{display:checkboxState}}><Icon iconName='OpenFile' className={styles.icon} />File<input type="file" onChange={handleFileChange} multiple style={{ display: "none" }} />
 
-      </label> :
-        <div><label style={{ textAlign: "left", float: "left", width: 150 ,display:checkboxState}}>JIRA Number</label> <input id='JiraInput' type='text'  onChange={(e)=>onchange_inputValue(e)} style={{ textAlign: "left", float: "left", height: 18 ,display:checkboxState}}></input></div>}
-      <br></br>
+      <div style={{textAlign: "left"}}><span style={{fontWeight:700}}>{childTtitle}</span></div>
+      
       {/* 展示 从文件夹展示的数据 */}
       <div>
 
         {fileUploadControlBool && <hr style={{display:checkboxState}}></hr>}
         {fileUploadControlBool && <div style={{ textAlign: "left",display:checkboxState }}>
         
-          {docFiles.length>0&&<table style={{ tableLayout: "fixed" ,display:checkboxState}}>
-            
-            <thead style={{ textAlign: "left" }}>
-              <tr> <th> File Name</th>
-                <th>Date Uploaded</th>
-                <th>Size</th>
-                <th></th>
-
-              </tr>
-            </thead>
-            {docFiles.map((file, index) => (
-
-              <tr data-index={index} style={{ textAlign: "left" }}>
-                <td className={styles.tdsetting}><IconSelected fileSuffix={file.Name.slice(file.Name.lastIndexOf("."))}></IconSelected>&nbsp;{file.Name}</td>
-                {/* <td>{file.lastModifiedDate.toLocaleDateString()}</td>  */}
-                <td width={150}>{format(new Date(file.TimeLastModified), "yyyy/MM/dd hh:mm:ss")}</td>
-                <td width={60}>{Math.floor(Number(file.Length) / 1024) + "KB"}</td>
-                {/* <td><PrimaryButton onClick={()=>deleteFileFromSPDoc(file.Name)}>Delete</PrimaryButton> </td> */}
-
-                {/* <td width={60}><Label><a href='#' onClick={()=>deleteFileFromSPDoc(file.Name)}>     X</a></Label></td> */}
-                <td width={60}><a href='#' onClick={() => deleteFileFromSPDoc(file.Name)}><Icon iconName='Cancel'></Icon></a></td>
-              </tr>
-            ))}
-          </table>}
+        {fileUploadControlBool&&<DetailsList
+            items={docFiles || []}
+            setKey="none"
+            selectionMode={SelectionMode.none}
+            columns={columns}
+            getKey={(item: any ) => item.key }
+            layoutMode={DetailsListLayoutMode.justified}
+            isHeaderVisible={true}
+        />}
 
         </div>
         }
       </div>
-      {files.length > 0 && <hr style={{display:checkboxState}}></hr>}
+      
+
+
 
       <div style={{ textAlign: "left" ,display:checkboxState}}>
-        {files.length > 0 ? <table >
-          {/* <span>将要上传的文件</span> */}
-          <thead style={{ textAlign: "left" }}>
-            <tr> <th> File Name</th>
-              <th>Date Uploading</th>
-              <th>Size</th>
+      {files.length>0&&<div style={{ textAlign: "left", display: checkboxState }}>
 
-            </tr>
-          </thead>
-          {files.map((file, index) => (
-            <tr data-index={index} style={{ textAlign: "left" }}>
-              <td className={styles.tdsetting}><IconSelected fileSuffix={file.name.slice(file.name.lastIndexOf("."))}></IconSelected>&nbsp;{file.name}</td>
-              {/* <td>{file.lastModifiedDate.toLocaleDateString()}</td>  */}
-              <td width={150}>{format(new Date(), "yyyy/MM/dd:hh:mm")}</td>
-              <td width={60}>{Math.floor(file.size / 1024) + "KB"}</td>
-
-            </tr>
-          ))}
-        </table> : null}
-        {/* <ul>
-        {files.map((file, i) => (
-          <li key={i}>
-            {file.name} - {file.type}
-            
-          </li>
-        ))}
-      </ul> */}
+<DetailsList
+    items={files || []}
+    setKey="none"
+    selectionMode={SelectionMode.none}
+    columns={columnsUpload}
+    getKey={(item: any ) => item.key }
+    layoutMode={DetailsListLayoutMode.justified}
+    isHeaderVisible={true}
+/>
+</div>}
       </div>
+      {fileUploadControlBool ? <label  className={styles['custom-file-upload']} style={{display:checkboxState}}><Icon iconName='Attach' className={styles.icon} />Select Files<input type="file" onChange={handleFileChange} multiple style={{ display: "none" }} />
+
+      </label> :
+        <div><label style={{ textAlign: "left", float: "left", width: 150 ,display:checkboxState}}>JIRA Number</label> <input id='JiraInput' type='text'  onChange={(e)=>onchange_inputValue(e)} style={{ textAlign: "left", float: "left", height: 18 ,display:checkboxState}}></input></div>}
+      <br></br>
       <br></br>
       {!fileUploadControlBool ?<div style={{ textAlign: 'left',display:checkboxState }}><PrimaryButton onClick={saveInputText} disabled={jiraInputValue==null} >Save Jira</PrimaryButton></div>:<div style={{ textAlign: 'left',display:checkboxState }}><PrimaryButton onClick={handleUploadClick} disabled={files.length <= 0} >Save</PrimaryButton></div>}
       <br ></br>

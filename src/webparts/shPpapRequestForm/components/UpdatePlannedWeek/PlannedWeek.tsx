@@ -2,7 +2,7 @@ import * as React from "react";
 import styles from "./PlannedWeek.module.scss";
 import { IShPpapRequestFormWebPartProps } from "./IPPAPWeekProps";
 import { escape } from "@microsoft/sp-lodash-subset";
-import { IconButton, PrimaryButton, TextField } from "office-ui-fabric-react";
+import { constructKeytip, IconButton, PrimaryButton, TextField } from "office-ui-fabric-react";
 import { getSP } from "../../common/pnpjsConfig";
 import { SPFI, spfi } from "@pnp/sp";
 import { ListView, IViewField, SelectionMode, GroupOrder, IGrouping } from "@pnp/spfx-controls-react/lib/ListView";
@@ -12,7 +12,7 @@ import { Icon } from 'office-ui-fabric-react/lib/Icon';
 
 
 interface IShPpapRequestFormWebPartState { items: IListItem[], paginatedItems: IListItem[] , selectedItems: any[]}
-interface IListItem { ID:string, ItemNbr: string, PPAPOrderNumber: string, ItemNm: string,SQANm:string, PARMANm:string, PPAPPartWeightCode:string, PPAPPartWeight:string, PPAPplannedweek:string }
+interface IListItem { ID:string, ItemNbr: string, PPAPOrderNumber: string, ItemNm: string,SQANm:string, PARMANm:string, SQACd:string, PPAPplannedweek:string, PARMANbr:string, Flag: boolean }
 
 export interface IListItemColl {  
   value: IListItem[];  
@@ -21,6 +21,9 @@ export interface IListItemColl {
 let arr: any[] =[];
 let unique: any[] =[];
 let currentPage = 1;
+let currentYear = new Date().getFullYear();
+const weekRegex = new RegExp(currentYear +'[0-5][0-9]');
+let saveFlag : boolean = false;
 
 //const DeleteIcon = () => <Icon iconName="Delete" />;
 const viewFields: IViewField[] = [{  
@@ -48,8 +51,8 @@ const viewFields: IViewField[] = [{
   maxWidth: 200  
 },  
 {  
-  name: "SQANm",  
-  displayName: "SQE Name",  
+  name: "PARMANbr",  
+  displayName: "PARMA Number",  
   isResizable: true,  
   sorting: true,  
   minWidth: 0,  
@@ -63,6 +66,30 @@ const viewFields: IViewField[] = [{
   minWidth: 0,  
   maxWidth: 150  
 },
+{  
+  name: "SQACd",  
+  displayName: "SQA Code",  
+  isResizable: true,  
+  sorting: true,  
+  minWidth: 0,  
+  maxWidth: 150  
+},
+{  
+  name: "SQANm",  
+  displayName: "SQA Name",  
+  isResizable: true,  
+  sorting: true,  
+  minWidth: 0,  
+  maxWidth: 150  
+},
+{  
+  name: "PPAPplannedweek",  
+  displayName: "PPAP Planned Week",  
+  isResizable: true,  
+  sorting: true,  
+  minWidth: 0,  
+  maxWidth: 150  
+}
 ]; 
 
 
@@ -110,7 +137,7 @@ export default class ShPpapRequestFormWebPart extends React.Component<IShPpapReq
  
 <br/>
 <div className={styles.header}>
-      Select items from below to add to the PPAP request:
+      Select items from below to update PPAP planned week:
       <hr></hr>
     </div>
   <div className={styles.listView}>  
@@ -149,7 +176,6 @@ export default class ShPpapRequestFormWebPart extends React.Component<IShPpapReq
             <tr> <th> Order ID</th> 
               <th>Part ID</th>
                 <th>Item Name</th>
-                <th>SQE Name</th>
                 <th>PARMA Name</th>
                 <th>PPAP Planned Week</th>
             </tr>
@@ -160,13 +186,12 @@ export default class ShPpapRequestFormWebPart extends React.Component<IShPpapReq
                 <td>{item.PPAPOrderNumber}</td>  
                 <td>{item.ItemNbr}</td>  
                 <td>{item.ItemNm}</td>
-                <td>{item.SQANm}</td>
                 <td>{item.PARMANm}</td>  
                 <td>  <input className={styles.inputFields}
                   name="weight"
                   type="text"
                   onChange={(e) => this.onChangeWeek(e, item.ID, index)}
-                  placeholder="Type Weight"
+                  placeholder="eg. 202312"
                 /> </td>
                 
                 <td>
@@ -182,7 +207,7 @@ export default class ShPpapRequestFormWebPart extends React.Component<IShPpapReq
       </div>}
         <br></br>
         <div>
-          <PrimaryButton className={styles.button} onClick={() => this.updateItems()}>Save</PrimaryButton>
+          <PrimaryButton className={styles.button} disabled = {!saveFlag} onClick={() => this.updateItems()}>Save</PrimaryButton>
         </div>
       </section>
     );
@@ -204,16 +229,33 @@ export default class ShPpapRequestFormWebPart extends React.Component<IShPpapReq
         list.items.getById(item.ID).update({PPAPplannedweek: item.PPAPplannedweek}).then(b => {
           console.log(b);
         });
-    })
+    });
+    alert ('PPAP week updated for selected items')
   }
 
   public onChangeWeek= (e: any, ID: string, index: number) => {
-    unique[index].PPAPplannedweek = e.target.value;
-    this.setState({selectedItems: unique});
-    console.log(this.state.selectedItems);
+    const valid =  weekRegex.test(e.target.value);
+    console.log ('regex result ' + valid);
+    if(valid){
+      unique[index].PPAPplannedweek = e.target.value;
+      unique[index].Flag = true;
+      this.setState({selectedItems: unique});
+      console.log(this.state.selectedItems);
+    }
+    else{unique[index].Flag = false;
+      alert('Enter valid format, year followed by week number eg. 202341')
+    }
+    this.checkSave();
   }
 
-  
+  public checkSave()
+  {
+    let flag = true;
+    unique.forEach(item => {
+      flag = flag && item.Flag;
+    });
+    if(flag){saveFlag = true;}
+  }
   public _getSelection(items: any[]) {
     //console.log('Selected items:', items);
       arr.push(...items);
@@ -251,7 +293,7 @@ export default class ShPpapRequestFormWebPart extends React.Component<IShPpapReq
   async sampleBtnClick(): Promise<any> {
     const sp = spfi(this._sp);
     try {
-      const response =  await sp.web.lists.getByTitle("GPS Orders").items.select("ID", "ItemNm", "ItemNbr", "PARMANm","SQANm","PPAPOrderNumber","PPAPPartWeight","PPAPPartWeightCode","PPAPplannedweek").top(30)();
+      const response =  await sp.web.lists.getByTitle("GPS Orders").items.select("ID", "ItemNm", "ItemNbr","PARMANbr","PARMANm","SQANm","SQACd","PPAPOrderNumber","PPAPplannedweek").top(30)();
       const items = response.map((item:IListItem) => {
         return {
           ID:item.ID,
@@ -260,9 +302,10 @@ export default class ShPpapRequestFormWebPart extends React.Component<IShPpapReq
           SQANm:item.SQANm,
           PARMANm:item.PARMANm,
           ItemNm: item.ItemNm,
-          PPAPPartWeightCode:item.PPAPPartWeightCode,
-          PPAPPartWeight:item.PPAPPartWeight,
-          PPAPplannedweek:item.PPAPplannedweek
+          SQACd:item.SQACd,         
+          PPAPplannedweek:item.PPAPplannedweek,
+          PARMANbr:item.PARMANbr,
+          Flag: false
         };
       });
       //console.log(items);
