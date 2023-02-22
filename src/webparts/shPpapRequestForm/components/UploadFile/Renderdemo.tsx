@@ -23,23 +23,23 @@ function Renderdemo() {
 
 
         <FileUploadMultiple
-          mainTitle="2.Engineering Change Documents, if any  "
+          mainTitle="2.Engineering Change Documents  "
           titleDiscription=""
-          checkboxTitle="No Information"
+          checkboxTitle="Not Applicable"
           mandatoryBool={false}
-          uploadFilePath="Upload file/202302/2. Engineering Change Documents, if any" fileUploadControlBool={false}></FileUploadMultiple>
+          uploadFilePath="Upload file/202302/2. Engineering Change Documents" fileUploadControlBool={false}></FileUploadMultiple>
 
         <FileUploadMultiple
-          mainTitle="3. Customer Engineering Approval, if required  "
+          mainTitle="3. Customer Engineering Approval  "
           titleDiscription="DVP with PD signature"
           checkboxTitle="Mandatory"
           mandatoryBool={true}
-          uploadFilePath="Upload file/202302/3. Customer Engineering Approval, if required" fileUploadControlBool={true}></FileUploadMultiple>
+          uploadFilePath="Upload file/202302/3. Customer Engineering Approval" fileUploadControlBool={true}></FileUploadMultiple>
 
         <FileUploadMultiple
           mainTitle="4. Design FMEA  "
           titleDiscription=""
-          checkboxTitle="No Information"
+          checkboxTitle="Not Applicable"
           mandatoryBool={false}
           uploadFilePath="Upload file/202302/4. Design FMEA" fileUploadControlBool={true}></FileUploadMultiple>
 
@@ -67,7 +67,7 @@ function Renderdemo() {
         <FileUploadMultiple
           mainTitle="8. Measurement System Analysis  "
           titleDiscription=""
-          checkboxTitle="No Information"
+          checkboxTitle="Not Applicable"
           mandatoryBool={false}
           uploadFilePath="Upload file/202302/8. Measurement System Analysis" fileUploadControlBool={true}></FileUploadMultiple>
 
@@ -107,19 +107,19 @@ function Renderdemo() {
         <FileUploadMultiple
           mainTitle="11. Initial Process Studies  "
           titleDiscription=""
-          checkboxTitle="No Information"
+          checkboxTitle="Not Applicable"
           mandatoryBool={false}
           uploadFilePath="Upload file/202302/11. Initial Process Studies" fileUploadControlBool={true}></FileUploadMultiple>
         <FileUploadMultiple
           mainTitle="12. Qualified Laboratory Documentation  "
           titleDiscription=""
-          checkboxTitle="No Information"
+          checkboxTitle="Not Applicable"
           mandatoryBool={false}
           uploadFilePath="Upload file/202302/12. Qualified Laboratory" fileUploadControlBool={true}></FileUploadMultiple>
         <FileUploadMultiple
           mainTitle="13. Appearance Approval Report, if applicable  "
           titleDiscription=""
-          checkboxTitle="No Information"
+          checkboxTitle="Not Applicable"
           mandatoryBool={false}
           uploadFilePath="Upload file/202302/13. Appearance Approval" fileUploadControlBool={true}></FileUploadMultiple>
 
@@ -127,20 +127,20 @@ function Renderdemo() {
         <FileUploadMultiple
           mainTitle="14. Sample Product  "
           titleDiscription=""
-          checkboxTitle="No Information"
+          checkboxTitle="Not Applicable"
           mandatoryBool={false}
           uploadFilePath="Upload file/202302/14. Sample Product" fileUploadControlBool={true}></FileUploadMultiple>
 
         <FileUploadMultiple
           mainTitle="15. Master Sample  "
           titleDiscription=""
-          checkboxTitle="No Information"
+          checkboxTitle="Not Applicable"
           mandatoryBool={false}
           uploadFilePath="Upload file/202302/15. Master Sample" fileUploadControlBool={true}></FileUploadMultiple>
         <FileUploadMultiple
           mainTitle="16. Checking Aids"
           titleDiscription=""
-          checkboxTitle="No Information"
+          checkboxTitle="Not Applicable"
           mandatoryBool={false}
           uploadFilePath="Upload file/202302/16. Checking Aids" fileUploadControlBool={true}></FileUploadMultiple>
 

@@ -169,8 +169,8 @@ function MultiFileUploadComponent(props:any){
         maxWidth: 350,
         isRowHeader: true,
         isResizable: true,
-        isSorted: true,
-        isSortedDescending: false,
+        // isSorted: true,
+        // isSortedDescending: false,
         data: 'string',
         isPadded: true,
         onRender: (item: any) => {
@@ -208,7 +208,7 @@ function MultiFileUploadComponent(props:any){
       },
        {
         key: 'column5',
-        name: 'Opreation',
+        name: 'Remove',
         fieldName: 'fileSizeRaw',
         minWidth: 70,
         maxWidth: 90,
@@ -217,7 +217,7 @@ function MultiFileUploadComponent(props:any){
         data: 'number',
         onRender: (item) => {
           // TODO: 用个icon替换
-          return <span onClick={() => deleteFileFromSPDoc(item.Name)}>X</span>;
+          return <a href='#' onClick={() => deleteFileFromSPDoc(item.Name)}><Icon iconName='Cancel'></Icon></a>;
         },
       },
     ];
@@ -251,8 +251,8 @@ function MultiFileUploadComponent(props:any){
         maxWidth: 350,
         isRowHeader: true,
         isResizable: true,
-        isSorted: true,
-        isSortedDescending: false,
+        // isSorted: true,
+        // isSortedDescending: false,
         data: 'string',
         isPadded: true,
         onRender: (item: any) => {
@@ -305,13 +305,13 @@ function MultiFileUploadComponent(props:any){
       </div>
       <br></br>
 
-      <div style={{textAlign: "left"}}><span style={{fontWeight:700}}>{childTtitle}</span></div>
+      <div style={{textAlign: "left" ,paddingLeft: 20}}><span style={{fontWeight:700}}>{childTtitle}</span></div>
       
       {/* 展示 从文件夹展示的数据 */}
       <div>
 
         {fileUploadControlBool && <hr style={{display:checkboxState}}></hr>}
-        {fileUploadControlBool && <div style={{ textAlign: "left",display:checkboxState }}>
+        {fileUploadControlBool && <div style={{ textAlign: "left",display:checkboxState  }}>
         
         {fileUploadControlBool&&<DetailsList
             items={docFiles || []}
@@ -344,13 +344,13 @@ function MultiFileUploadComponent(props:any){
 />
 </div>}
       </div>
-      {fileUploadControlBool ? <label  className={styles['custom-file-upload']} style={{display:checkboxState}}><Icon iconName='Attach' className={styles.icon} />Select Files<input type="file" onChange={handleFileChange} multiple style={{ display: "none" }} />
+      {fileUploadControlBool ? <label  className={styles['custom-file-upload']} style={{display:checkboxState,paddingLeft:15}}><Icon iconName='Attach' className={styles.icon} />Select Files<input type="file" onChange={handleFileChange} multiple style={{ display: "none" }} />
 
       </label> :
         <div><label style={{ textAlign: "left", float: "left", width: 150 ,display:checkboxState}}>JIRA Number</label> <input id='JiraInput' type='text'  onChange={(e)=>onchange_inputValue(e)} style={{ textAlign: "left", float: "left", height: 18 ,display:checkboxState}}></input></div>}
       <br></br>
       <br></br>
-      {!fileUploadControlBool ?<div style={{ textAlign: 'left',display:checkboxState }}><PrimaryButton onClick={saveInputText} disabled={jiraInputValue==null} >Save Jira</PrimaryButton></div>:<div style={{ textAlign: 'left',display:checkboxState }}><PrimaryButton onClick={handleUploadClick} disabled={files.length <= 0} >Save</PrimaryButton></div>}
+      {!fileUploadControlBool ?<div style={{ textAlign: 'left',display:checkboxState,paddingLeft:15 }}><PrimaryButton onClick={saveInputText} disabled={jiraInputValue==null} >Save Jira</PrimaryButton></div>:<div style={{ textAlign: 'left',display:checkboxState ,paddingLeft:15 }}><PrimaryButton onClick={handleUploadClick} disabled={files.length <= 0} >Save</PrimaryButton></div>}
       <br ></br>
       <hr style={{ height: 10, color: 'transparent', opacity: 0.0 ,display:checkboxState}}></hr>
 
