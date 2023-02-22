@@ -1,7 +1,5 @@
 import { createSelector } from "@reduxjs/toolkit";
-import { 
-  IRequestState
- } from "./requestsSlice";
+import { IRequestState } from "./requestsSlice";
 import { RootState } from "../../store";
 
 const featureStateSelector = (state: RootState): object => state.request;
@@ -22,6 +20,10 @@ export const itemSelector = createSelector(
   (state: IRequestState) => state?.item
 );
 
-
-
-
+/**
+ * listId selector
+ */
+export const listIdSelector = createSelector(
+  featureStateSelector,
+  (state: IRequestState) => state?.listId
+);

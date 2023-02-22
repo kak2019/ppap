@@ -7,9 +7,10 @@ import Renderdemo from "./UploadFile/Renderdemo";
 
 import SelectParts from "./selectparts";
 import EditPlannedWeek from "./editplannedweek";
+import Dispform from "./dispform";
 
 export default memo(function App() {
-  const [param] = useUrlQueryParam(["PlanEdit", "EditMode", "ID"]);
+  const [param] = useUrlQueryParam(["PlanEdit", "EditMode", "ID", "List"]);
   /**
         EditFormUrl = "PathOfPage?EditMode=yes"
         NewFormUrl = "PathOfPage?ID=-1"
@@ -21,6 +22,9 @@ export default memo(function App() {
       {param.ID === "-1" && <SelectParts />}
       {param.EditMode === "yes" && param.ID !== "" && +param.ID >= 0 && (
         <Renderdemo />
+      )}
+      {param.EditMode === "" && param.ID !== "" && +param.ID >= 0 && (
+        <Dispform itemId={param.ID} listId={param.List} />
       )}
     </>
   );
