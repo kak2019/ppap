@@ -1,8 +1,12 @@
 @import '~office-ui-fabric-react/dist/sass/References.scss';
 
 .shPpapRequestForm {
+  .container {
+    max-width: 1024px;
+    margin: 0px auto;
+  }
   //overflow: hidden;
-  padding: 1em;
+  // padding: 1em;
   color: "[theme:bodyText, default: #323130]";
   color: var(--bodyText);
 
