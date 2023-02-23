@@ -21,7 +21,7 @@ export default memo(function App() {
       {param.ID === "-1" && <SelectParts />}
       {param.EditMode === "yes" && param.ID !== "" && +param.ID >= 0 && (
         <Renderdemo />
-      )}
+      )} 
     </>
   );
 });
