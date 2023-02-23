@@ -1,9 +1,9 @@
-import { WebPartContext } from '@microsoft/sp-webpart-base';
 export interface IShPpapRequestFormProps {
   description: string;
   isDarkTheme: boolean;
   environmentMessage: string;
   hasTeamsContext: boolean;
   userDisplayName: string;
-  context:WebPartContext
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  context: any;
 }
