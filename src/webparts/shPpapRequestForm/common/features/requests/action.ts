@@ -46,11 +46,9 @@ export const addRequestAction = createAsyncThunk(
         itemNumber: request.itemNumber,
         Status: request.Status,
       })
-      .then((b) => b.data)
       .catch(
-        (e) => e.message
-        //"Error when add request"
+        (err) => Promise.reject(err)
       );
-    return { request: result };
+    return result;
   }
 );

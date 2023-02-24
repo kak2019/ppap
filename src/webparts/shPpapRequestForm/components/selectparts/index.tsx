@@ -9,6 +9,8 @@ import {
   Overlay,
   ScrollbarVisibility,
   DefaultButton,
+  DialogType,
+  DialogFooter,
 } from "office-ui-fabric-react";
 import {
   ListView,
@@ -17,6 +19,7 @@ import {
   GroupOrder,
   IGrouping,
 } from "@pnp/spfx-controls-react/lib/ListView";
+import { AnimatedDialog } from "@pnp/spfx-controls-react/lib/AnimatedDialog";
 
 import { useOrders, useRequest, useUrlQueryParam } from "../../common/hooks";
 import { IOrdersListItem, IRequestListItem } from "../../common/model";
@@ -34,12 +37,7 @@ export default memo(function index() {
     addSelectedItem,
     removeSelectedItemById,
   ] = useOrders();
-  const [
-    isFetchingRequest,
-    ,
-    ,
-    addRequest,
-  ] = useRequest();
+  const [isFetchingRequest, , , addRequest] = useRequest();
   const [sourcePage] = useUrlQueryParam(["Source"]);
 
   const selectedItemIds = useMemo(
@@ -47,6 +45,7 @@ export default memo(function index() {
     [selectedItems]
   );
   const [isStep1, setIsStep1] = useState(true);
+  const [showAnimatedDialog, setShowAnimatedDialog] = useState(false);
 
   useEffect(() => {
     fetchAllOrders();
@@ -82,9 +81,18 @@ export default memo(function index() {
     //editOrderPartInfo({order:item});
     updateSelectedItem({ order: item });
   };
-  const handleSubmit =  (): void => {
+  const handlePrevStep = (): void => {
+    if (selectedItems.length > 0) {
+      setShowAnimatedDialog(true);
+    } else {
+      setIsStep1(true);
+    }
+  };
+
+  const handleSubmit = async (): Promise<number> => {
     let itemNbr: string = "";
     let isHeader = true;
+
     selectedItems.forEach((order) => {
       editOrderPartInfo({ order: order });
       if (!isHeader) {
@@ -100,9 +108,13 @@ export default memo(function index() {
       Status: "Creating",
       requestPartJSON: JSON.stringify(selectedItems),
     };
-    addRequest({ request: requestNew });
-    setTimeout(()=>{if (!isFetchingRequest) returnToSource(sourcePage.Source)},0);
-    
+    const res = await addRequest({ request: requestNew });
+    if (!res && !isFetchingRequest) {
+      returnToSource(sourcePage.Source);
+      return Promise.resolve(0);
+    } else {
+      return Promise.reject(1);
+    }
   };
   //#region =========styles and templates===========
   const viewFields: IViewField[] = [
@@ -310,9 +322,50 @@ export default memo(function index() {
       width: 1000,
     };
   }, []);
+
+  // Properties of the dialog
+  const animatedDialogContentProps = {
+    type: DialogType.normal,
+    title: "Warning - Data Loss",
+    subText:
+      "Back to previous step will clear the selection of parts and any other values inputed in current view. Do you want to continue?",
+  };
+
+  const animatedModalProps = {
+    isDarkOverlay: true,
+  };
   //#endregion
   return (
     <div>
+      <AnimatedDialog
+        hidden={!showAnimatedDialog}
+        onDismiss={() => {
+          setShowAnimatedDialog(false);
+        }}
+        dialogContentProps={animatedDialogContentProps}
+        modalProps={animatedModalProps}
+      >
+        <DialogFooter>
+          <PrimaryButton
+            onClick={() => {
+              setShowAnimatedDialog(false);
+              // Clear selection
+              selectedItemIds.forEach((element) => {              
+                  removeSelectedItemById(element);
+              });
+              setIsStep1(true);
+            }}
+            text="Yes"
+          />
+          <DefaultButton
+            onClick={() => {
+              setShowAnimatedDialog(false);
+            }}
+            text="No"
+          />
+        </DialogFooter>
+      </AnimatedDialog>
+
       <Separator alignContent="start">
         <h2>
           {isStep1
@@ -388,7 +441,7 @@ export default memo(function index() {
         }}
       >
         {!isStep1 && (
-          <DefaultButton disabled={isStep1} onClick={() => setIsStep1(true)}>
+          <DefaultButton disabled={isStep1} onClick={handlePrevStep}>
             Previous Step
           </DefaultButton>
         )}
@@ -397,14 +450,14 @@ export default memo(function index() {
             Next Step
           </DefaultButton>
         )}
-        {!isStep1 && selectedItems.length > 0 &&
+        {!isStep1 && selectedItems.length > 0 && (
           <PrimaryButton
             disabled={isStep1 || selectedItems.length === 0}
             onClick={handleSubmit}
           >
             Submit
           </PrimaryButton>
-        }
+        )}
         <DefaultButton onClick={() => returnToSource(sourcePage.Source)}>
           Cancel
         </DefaultButton>

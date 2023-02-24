@@ -17,7 +17,7 @@ type RequestOperators = [
   isFetching: RequestStatus,
   request: IRequestListItem,
   fetchRequestById: (Id: number) => void,
-  addRequest: (arg: { request: IRequestListItem }) => void,
+  addRequest: (arg: { request: IRequestListItem }) => Promise<number>,
   requestListId: string,
   fetchRequestListId: () => void,
   changeRequestListId: (Id: string) => void
@@ -36,8 +36,13 @@ export const useRequest = (): Readonly<RequestOperators> => {
   );
 
   const addRequest = useCallback(
-    (arg: { request: IRequestListItem }) => {
-      return dispatch(addRequestAction(arg));
+    async (arg: { request: IRequestListItem }) => {
+      try {
+        await dispatch(addRequestAction(arg));
+        return Promise.resolve(0);
+      } catch {
+        return Promise.reject(1);
+      }
     },
     [dispatch]
   );
