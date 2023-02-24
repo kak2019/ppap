@@ -1,11 +1,11 @@
 import { Icon } from 'office-ui-fabric-react';
 import *  as React from 'react';
-import { ChangeEvent, useEffect, useState } from 'react';
+import {  useEffect, useState } from 'react';
 import { initializeFileTypeIcons } from '@fluentui/react-file-type-icons';
 import { getFileTypeIconProps } from '@fluentui/react-file-type-icons';
-let iconname: string;
+
 initializeFileTypeIcons();
-function IconSelected(props: any) {
+function IconSelected(props: {fileSuffix:string})    {
     const { fileSuffix } = props
     const [iconname, seticonname] = useState(String);
     useEffect(() => {

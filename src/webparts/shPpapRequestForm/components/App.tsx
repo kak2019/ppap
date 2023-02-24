@@ -21,8 +21,8 @@ export default memo(function App() {
       {param.PlanEdit === "1" && <EditPlannedWeek />}
       {param.ID === "-1" && <SelectParts />}
       {param.EditMode === "yes" && param.ID !== "" && +param.ID >= 0 && (
-        <Renderdemo />
-      )}
+        <Renderdemo itemId={param.ID} listId={param.List}/>
+      )}  
       {param.EditMode === "" && param.ID !== "" && +param.ID >= 0 && (
         <Dispform itemId={param.ID} listId={param.List} />
       )}
