@@ -320,15 +320,15 @@ function FileUploadMultiple(props: any) {
         </div>
         <div style={{ textAlign: "right", float: "right", justifyContent: "flex-end" }}>{mandatoryBool ? <span>{checkboxTitle}</span> : <div onChange={onclick_checkboxValue}><Checkbox label={checkboxTitle} ></Checkbox></div>}</div>
       </div>
-      <br></br>
+      <br/>
 
-      <br></br>
+      <br/>
       {/* 展示 从文件夹展示的数据 */}
       
       
       <div style={{ display: checkboxState }}>
 
-        {fileUploadControlBool && <hr style={{ display: checkboxState }}></hr>}
+        {fileUploadControlBool && <hr style={{ display: checkboxState }}/>}
 
         {fileUploadControlBool&&<DetailsList 
             items={docFiles || []}
@@ -358,15 +358,15 @@ function FileUploadMultiple(props: any) {
 
 </label> :
   <div>
-    <hr style={{ display: checkboxState }}></hr>
-    <label style={{ textAlign: "left", float: "left", width: 180, display: checkboxState ,paddingLeft:15 }}>JIRA Number</label> <input id='JiraInput' type='text' onChange={(e) => onchange_inputValue(e)} style={{ textAlign: "left", float: "left", height: 18, display: checkboxState }}></input></div>}
+    <hr style={{ display: checkboxState }}/>
+    <label style={{ textAlign: "left", float: "left", width: 180, display: checkboxState ,paddingLeft:15 }}>JIRA Number</label> <input id='JiraInput' type='text' onChange={(e) => onchange_inputValue(e)} style={{ textAlign: "left", float: "left", height: 18, display: checkboxState }}/></div>}
       
-      <br></br>
+      <br/>
       
-      <br></br>
+      <br/>
       {!fileUploadControlBool ? <div style={{ textAlign: 'left', display: checkboxState ,paddingLeft:15}}><PrimaryButton onClick={saveInputText} disabled={saveJiraDisable} >Save</PrimaryButton></div> : <div style={{ textAlign: 'left', display: checkboxState ,paddingLeft:15}}><PrimaryButton onClick={handleUploadClick} disabled={files.length <= 0} >Save</PrimaryButton></div>}
-      <br ></br>
-      <hr style={{ height: 10, color: 'transparent', opacity: 0.0, display: checkboxState }}></hr>
+      <br />
+      <hr style={{ height: 10, color: 'transparent', opacity: 0.0, display: checkboxState }}/>
 
     </div>
 

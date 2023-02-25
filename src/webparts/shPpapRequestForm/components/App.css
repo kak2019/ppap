@@ -1,326 +1,42 @@
 /*remove left navigation box from the SharePoint page*/
 #sideNavBox {
-    display: none !important;
-    }
-    
-    #contentBox {
-    margin-left: 5px !important;
-    }
-  
-  .disabled-style label{
-    background-color: #ffffff !important;
-  }
-  
-  /*move the form a little up*/
-  .ms-core-tableNoSpace{
-      margin-top: -50px;
-    }
-    
-    .headerColumn{
-      font-weight: bold; 
-      white-space: normal;
-      float: left;
-      /*width: 85%;*/
-    }
-    
-    .relative-left{
-      position: relative;
-      right: 30px;
-    }  
-  
-    
-    /* select/clear menu for multi drop downs */
-    .mdd-menu{
-      float: left;
-      font-size: 11px;
-      color: darkviolet;
-      cursor: pointer;
-    }
-    
-    .mdd-menu > div:hover{
-      font-weight: bold;
-    }
-    
-    /* tag picker */
-    .ms-TagItem{
-      max-width: 500px !important;
-    }
-    
-    /* Version Historty and Edit buttons */
-    .commands > span{
-      font-size: 13px;
-      display: inline-block;
-      padding: 4px 20px;
-      text-align: center;
-    }
-    
-    .commands > span:hover{
-      background-color: rgba(205, 230, 247, 0.5);
-      cursor: pointer;
-    }
-    
-    .ms-formlabel hr{
-      margin-top: 0;
-    }
-    
-    /* this makes disable control easier to read */
-    .ms-Dropdown-title{
-      color: rgb(51,51,51) !important;
-    }
-    
-    .ms-TextField-field[disabled], .disabled-style{
-      color: rgb(51,51,51) !important;
-      background-color: #f4f4f4 !important;
-    }
-    
-    /*styling labels as disabled text fields*/
-    .disabled-style{
-      min-height: 30px;
-      padding-right: 12px;
-      padding-left: 12px;
-    }
-    
-    /* hide validation messages from showing up during first data load */
-    /* span.required{
-      display: none;
-    } */
-    
-    /* sublabels in data processing */
-    .sub-label .headerColumn{
-      text-align: right;
-      font-weight: normal !important;
-      font-style: italic;
-    }
-    
-    .sub-label .small-container{
-      text-align: left;
-      font-style: normal;
-    }
-    
-    /* this one is required to prevent fields from expanding without control */
-    /*.small-container > div{*/
-    .small-container {
-      max-width: 750px;
-    }
-    
-    .small-container input{
-      border: none;
-    }
-    
-    #DeltaPlaceHolderPageDescription{
-      display: none;
-    }
-    
-    /* css for OpenPopUpPageWithDialogOptions */
-    .ms-dlgContent h1, h3{
-      font-family: Arial !important;
-    }
-    
-    .current-payment-term{
-      width: 280px;
-    }
-    
-    .current-payment-term label{
-      width: 250px;
-      float: left;
-    }
-    
-    .current-payment-term img{
-      vertical-align: -webkit-baseline-middle;
-      padding-left: 5px;
-      display: none;
-    }
-    
-    /*@media all and (min-width:768px)*/
-    .navbar-right {
-      float: right !important;
-      margin-right: 15px;
-      line-height: 1.4285;
-    }
-    
-    .navbar-left {
-      float: right !important;
-      margin-left: 15px;
-      line-height: 1.4285;
-    }
-    
-    
-    .required {
-      color: #bf0000;
-    }
-    
-    .pad-top {
-      padding-top: 16px;
-    }
-    
-    .padded {
-      padding: 16px;
-    }
-    
-    
-    .right-aligned {
-      float: right;
-      padding: 4px;
-      margin: 4px;
-    }
-    
-    /*Notification Area*/
-    .ms-notif-box{
-      display: block;
-      position: fixed;
-      top: 250px;
-      right: 25px;
-      font-weight: bold;
-    }
-    
-    /* MODAL DIALOGS CLASSES */
-  /*   
-    .ms-Dialog-header{
-      background-color: red;
-    }
-    
-    .ms-Dialog-subText{
-      font-size: 16px;
-    }
-    
-    .ms-Dialog-lgHeader{
-      width: 340px;
-    } */
-    
-    .modal-container { 
-      width: 600px;
-      height: 400px;
-      padding: 20px;
-    }
-    
-    .modal-body {
-      padding: 20px;
-    }
-    
-    .tooltip-container {
-      max-width: 500px;
-    }
-    
-    /* 
-    Some Office UI Fabric styles are overwritten by SharePoint core.js
-    We need to prevent that
-     */
-    
-     /*Combobox*/
-     .ms-ComboBox-CaretDown-button {
-        min-width: 20px !important;
-     }
-    
-    .ms-Dropdown-optionText {
-      font-size: 14px !important;
-    }
-    
-    .ms-Button--icon:hover {
-      border: none !important;
-      background-color: inherit !important;
-    }
-    
-    /*ListItemPicker*/
-    .ms-Suggestions-itemButton {
-      padding: 4px 12px !important;
-      height: auto !important;
-    }
-    
-    /*Calendar CSS*/
-    .clsCalendar button{
-      min-width: 0 !important;
-    }
-    /*Styling print*/
-    @media print { 
-     
-      /*Setting for print page*/
-      @page { 
-        size: auto;
-        margin: 5mm 0 0 0;
-      }
-    
-      body {
-        margin: 10px;
-      }
-    
-      /*Hide navigation, menu, footer and buttons*/
-      nav, div.volvo-pivotLike-Container, .ms-Button, footer {
-          display: none;
-      }
-    
-      /* remove first occurence of line */
-      .row-delimited:first-of-type {
-        display: none;
-      }
-    
-      /* remove approval controls
-       that are not needed in print view */
-      .row-approval-controls {
-        display:none;
-      }
-    
-      /* top header */
-      h2.title {
-        margin-top: 0;
-        margin-bottom: 0;
-        font-size: 0.8rem;
-      }
-    
-      h3.headerColumn {
-        margin:0;
-        font-size: 0.8rem;   
-      }
-      /* labels */
-      .headerColumn {
-        padding: 0;
-      }
-    
-      .ms-Label {
-        font-size: 0.7rem; 
-        padding: 2px !important;
-      }
-    
-      .ms-formlabel {
-        font-size: 0.7rem; 
-      }
-    
-      .ms-Link {
-        font-size: 0.7rem; 
-      }
-    
-      /* To style on Grid */
-      .ms-Grid{
-        position: relative;     
-      }
-    
-      .ms-Grid-col{
-        font-size: 0.7rem; 
-      }
-      .ms-Checkbox {
-        padding: 2px 0 0 0;
-      }
-      /* command bar */
-      .row-commands {
-        display: none;
-      }
-      /*Overwrite office-ui-fabric on @media styling To avoid break line in Portrait mode*/
-      .ms-lg2, .ms-lg3, .ms-lg4, .ms-lg5, .ms-lg6, .ms-lg9{
-        width: 50%;
-      }
-      /* remove paddings to squeeze content */
-      .pad-top {
-        padding: 0;
-      }
-      /* add some space in tables */
-      .table-approval-tasks .pad-top {
-        padding-top: 5px;
-      }
-    
-      .table-approvers .pad-top {
-        padding-top: 5px;
-      }
-      .pad-left{
-        padding-left: 20px; 
-      }
-    }
-    
+  display: none !important;
+}
+
+#contentBox {
+  margin-left: 5px !important;
+}
+
+.disabled-style label {
+  background-color: #ffffff !important;
+}
+
+/*move the form a little up*/
+.ms-core-tableNoSpace {
+  margin-top: -50px;
+}
+
+.headerColumn {
+  font-weight: bold;
+  white-space: normal;
+  float: left;
+  /*width: 85%;*/
+}
+
+.relative-left {
+  position: relative;
+  right: 30px;
+}
+
+
+#DeltaPlaceHolderPageDescription {
+  display: none;
+}
+
+/* css for Planned week */
+
+/* .plannedWeekLv {
+  overflow: inherit !important;
+} */
+
+

@@ -3,11 +3,8 @@ import { memo, useEffect, useCallback, useMemo, useState } from "react";
 import {
   Spinner,
   PrimaryButton,
-  Separator,
-  ScrollablePane,
   Stack,
   Overlay,
-  ScrollbarVisibility,
   DefaultButton,
   DialogType,
   DialogFooter,
@@ -37,7 +34,7 @@ export default memo(function index() {
     addSelectedItem,
     removeSelectedItemById,
   ] = useOrders();
-  const [isFetchingRequest, , , addRequest] = useRequest();
+  const [isFetchingRequest, , , , addRequest, , , , , ,] = useRequest();
   const [sourcePage] = useUrlQueryParam(["Source"]);
 
   const selectedItemIds = useMemo(
@@ -92,18 +89,20 @@ export default memo(function index() {
   const handleSubmit = async (): Promise<number> => {
     let itemNbr: string = "";
     let isHeader = true;
-
+    let firstItemName = "";
     selectedItems.forEach((order) => {
       editOrderPartInfo({ order: order });
       if (!isHeader) {
         itemNbr += ";";
       } else {
         isHeader = !isHeader;
+        firstItemName = order.ItemNm;
       }
       itemNbr += order.ItemNbr;
     });
     // Create request
     const requestNew: IRequestListItem = {
+      PartName: firstItemName,
       itemNumber: itemNbr,
       Status: "Creating",
       requestPartJSON: JSON.stringify(selectedItems),
@@ -316,13 +315,6 @@ export default memo(function index() {
     ];
   }, []);
 
-  const rootContainerStyle: React.CSSProperties = React.useMemo(() => {
-    return {
-      height: 480,
-      width: 1000,
-    };
-  }, []);
-
   // Properties of the dialog
   const animatedDialogContentProps = {
     type: DialogType.normal,
@@ -336,7 +328,7 @@ export default memo(function index() {
   };
   //#endregion
   return (
-    <div>
+    <>
       <AnimatedDialog
         hidden={!showAnimatedDialog}
         onDismiss={() => {
@@ -350,8 +342,8 @@ export default memo(function index() {
             onClick={() => {
               setShowAnimatedDialog(false);
               // Clear selection
-              selectedItemIds.forEach((element) => {              
-                  removeSelectedItemById(element);
+              selectedItemIds.forEach((element) => {
+                removeSelectedItemById(element);
               });
               setIsStep1(true);
             }}
@@ -366,90 +358,78 @@ export default memo(function index() {
         </DialogFooter>
       </AnimatedDialog>
 
-      <Separator alignContent="start">
-        <h2>
-          {isStep1
-            ? "Select parts from below to add to the PPAP request:"
-            : "Click weight columns to edit weight information"}
-        </h2>
-      </Separator>
-      {isFetching || isFetchingRequest ? <Spinner /> : null}
       {isStep1 && (
-        <>
-          <Stack verticalFill grow style={rootContainerStyle}>
-            <Stack.Item
-              grow
-              style={{ position: "relative", backgroundColor: "white" }}
-            >
-              <ScrollablePane scrollbarVisibility={ScrollbarVisibility.auto}>
-                <ListView
-                  items={orders}
-                  viewFields={viewFields}
-                  groupByFields={groupByFields}
-                  compact={true}
-                  selectionMode={SelectionMode.multiple}
-                  selection={_getSelection}
-                  filterPlaceHolder="Search..."
-                  showFilter={true}
-                  //stickyHeader={flag} //Not real use this prop, just use flag to force update
-                />
-              </ScrollablePane>
-              {(isFetching || isFetchingRequest) && <Overlay />}
-            </Stack.Item>
-          </Stack>
-          <Separator alignContent="start">
+        <div style={{ height: "640px" }}>
+          <div style={{ height: "5%", lineHeight: "1em" }}>
+            <h2>Select parts from below to add to the PPAP request:</h2>
+          </div>
+          <div style={{ height: "90%", overflow: "scroll" }}>
+            <Stack style={{ width: 1000 }}>
+              {isFetching !== 0 || isFetchingRequest !== 0 ? <Spinner /> : null}
+              <ListView
+                items={orders}
+                viewFields={viewFields}
+                groupByFields={groupByFields}
+                compact={true}
+                selectionMode={SelectionMode.multiple}
+                selection={_getSelection}
+                filterPlaceHolder="Search..."
+                showFilter={true}
+                //listClassName="plannedWeekLv"
+              />
+            </Stack>
+          </div>
+          <div style={{ height: "5%", lineHeight: "1em" }}>
             <h3>
               Selected items: {selectedItems.length > 0 && selectedItems.length}
             </h3>
-          </Separator>
-        </>
-      )}
-      {!isStep1 && (
-        <>
-          {selectedItems.length > 0 && (
-            <Stack style={{ width: 1000 }}>
-              <ListView
-                items={selectedItems}
-                viewFields={selViewFields}
-                compact={false}
-                selectionMode={SelectionMode.none}
-              />
-            </Stack>
-          )}
-          {selectedItems.length === 0 && (
-            <div
-              style={{
-                fontSize: "16px",
-                textAlign: "center",
-                fontWeight: "450",
-              }}
-            >
-              No items selected
-            </div>
-          )}
-        </>
+          </div>
+          {isFetching !== 0 || isFetchingRequest !== 0 ? <Overlay /> : null}
+        </div>
       )}
 
-      <Stack
-        horizontal
-        verticalAlign="center"
-        wrap
-        styles={{ root: { width: 800 } }}
-        tokens={{
-          childrenGap: "8px",
-          padding: "m 4px",
-        }}
-      >
+      {!isStep1 && (
+        <div style={{ height: "320px" }}>
+          <div style={{ height: "10%", lineHeight: "1em" }}>
+            <h2>Click weight columns to edit weight information</h2>
+          </div>
+          <div style={{ height: "90%", overflow: "scroll" }}>
+            {selectedItems.length > 0 && (
+              <Stack style={{ width: 1000 }}>
+                <ListView
+                  items={selectedItems}
+                  viewFields={selViewFields}
+                  compact={false}
+                  selectionMode={SelectionMode.none}
+                />
+              </Stack>
+            )}
+            {selectedItems.length === 0 && (
+              <div
+                style={{
+                  fontSize: "16px",
+                  textAlign: "center",
+                  fontWeight: "450",
+                }}
+              >
+                No items selected
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      <div style={{ height: "80px", lineHeight: "4em" }}>
         {!isStep1 && (
           <DefaultButton disabled={isStep1} onClick={handlePrevStep}>
             Previous Step
           </DefaultButton>
-        )}
+        )}{" "}
         {isStep1 && (
           <DefaultButton disabled={!isStep1} onClick={() => setIsStep1(false)}>
             Next Step
           </DefaultButton>
-        )}
+        )}{" "}
         {!isStep1 && selectedItems.length > 0 && (
           <PrimaryButton
             disabled={isStep1 || selectedItems.length === 0}
@@ -457,11 +437,11 @@ export default memo(function index() {
           >
             Submit
           </PrimaryButton>
-        )}
+        )}{" "}
         <DefaultButton onClick={() => returnToSource(sourcePage.Source)}>
           Cancel
         </DefaultButton>
-      </Stack>
-    </div>
+      </div>
+    </>
   );
 });

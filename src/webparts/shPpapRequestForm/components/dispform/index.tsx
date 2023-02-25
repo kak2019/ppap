@@ -5,10 +5,7 @@ import { useRequest, useUrlQueryParam } from "../../common/hooks";
 import {
   DefaultButton,
   PrimaryButton,
-  ScrollablePane,
-  ScrollbarVisibility,
   SelectionMode,
-  Separator,
   Spinner,
   Stack,
 } from "office-ui-fabric-react";
@@ -17,21 +14,16 @@ import { IDynamicFieldProps } from "@pnp/spfx-controls-react/lib/controls/dynami
 import { IViewField, ListView } from "@pnp/spfx-controls-react";
 import { dispToEdit, returnToSource } from "../../common/utils";
 
-interface IDispFormProps {
-  itemId: string;
-  listId: string;
-}
-export default memo(function DisplayForm(props: IDispFormProps) {
-  const [isFetching, request, fetchRequestById, , , , changeRequestListId] =
+export default memo(function DisplayForm() {
+  const [isFetching, request, itemId, fetchRequestById, , listId, , , ,] =
     useRequest();
   const ctx = useContext(AppContext);
   const [sourcePage] = useUrlQueryParam(["Source"]);
   useEffect(() => {
-    if (props.itemId !== "" && props.listId !== "") {
-      fetchRequestById(+props.itemId);
-      changeRequestListId(props.listId);
+    if (itemId !== "") {
+      fetchRequestById(+itemId);
     }
-  }, [props]);
+  }, []);
   const [isNotReady, setIsNotReady] = useState(true);
 
   useEffect(() => {
@@ -107,11 +99,6 @@ export default memo(function DisplayForm(props: IDispFormProps) {
     },
   ];
 
-  const rootContainerStyle: React.CSSProperties = React.useMemo(() => {
-    return {
-      height: 280,
-    };
-  }, []);
   const hideField = useCallback(() => null, []);
   const renderSelectParts = useCallback(
     (
@@ -119,37 +106,32 @@ export default memo(function DisplayForm(props: IDispFormProps) {
     ): React.ReactElement<IDynamicFieldProps> => {
       const seletedItems = JSON.parse(fieldProperties.fieldDefaultValue);
       return (
-        <>
-          <Separator alignContent="start">
+        <div style={{ height: "280px" }}>
+          <div style={{ height: "10%", lineHeight: "1em" }}>
             <h3>Selected parts:</h3>
-          </Separator>
-          <Stack verticalFill grow style={rootContainerStyle}>
-            <Stack.Item
-              grow
-              style={{ position: "relative", backgroundColor: "white" }}
-            >
-              <ScrollablePane scrollbarVisibility={ScrollbarVisibility.auto}>
-                {!seletedItems && (
-                  <div
-                    style={{
-                      fontSize: "16px",
-                      textAlign: "center",
-                      fontWeight: "450",
-                    }}
-                  >
-                    No parts selected
-                  </div>
-                )}
-                <ListView
-                  items={seletedItems}
-                  viewFields={viewFields}
-                  compact={true}
-                  selectionMode={SelectionMode.none}
-                />
-              </ScrollablePane>
-            </Stack.Item>
-          </Stack>
-        </>
+          </div>
+          <div style={{ height: "90%", overflow: "scroll" }}>
+            <Stack style={{ width: 1000 }}>
+              <ListView
+                items={seletedItems}
+                viewFields={viewFields}
+                compact={true}
+                selectionMode={SelectionMode.none}
+              />
+              {!seletedItems && (
+                <div
+                  style={{
+                    fontSize: "16px",
+                    textAlign: "center",
+                    fontWeight: "450",
+                  }}
+                >
+                  No parts selected
+                </div>
+              )}
+            </Stack>
+          </div>
+        </div>
       );
     },
     []
@@ -163,8 +145,8 @@ export default memo(function DisplayForm(props: IDispFormProps) {
       {!isFetching && (
         <DynamicForm
           context={ctx.context}
-          listId={props.listId}
-          listItemId={+props.itemId}
+          listId={listId}
+          listItemId={+itemId}
           disabled={true}
           fieldOverrides={{
             Title: hideField,
@@ -172,24 +154,14 @@ export default memo(function DisplayForm(props: IDispFormProps) {
           }}
         />
       )}
-      <Stack
-        horizontal
-        verticalAlign="center"
-        wrap
-        styles={{ root: { width: 800 } }}
-        tokens={{
-          childrenGap: "4%",
-          padding: "m 4px",
-        }}
-      >
+      <div style={{ height: "80px", lineHeight: "4em" }}>
         <PrimaryButton onClick={() => dispToEdit()} disabled={isNotReady}>
           File Upload
-        </PrimaryButton>
-
+        </PrimaryButton>{" "}
         <DefaultButton onClick={() => returnToSource(sourcePage.Source)}>
           Close
         </DefaultButton>
-      </Stack>
+      </div>
     </div>
   );
 });

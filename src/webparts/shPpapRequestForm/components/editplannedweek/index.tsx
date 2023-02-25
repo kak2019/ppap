@@ -2,11 +2,8 @@ import * as React from "react";
 import { memo, useEffect, useCallback } from "react";
 import {
   Spinner,
-  Separator,
-  ScrollablePane,
   Stack,
   Overlay,
-  ScrollbarVisibility,
   DefaultButton,
 } from "office-ui-fabric-react";
 import {
@@ -17,7 +14,7 @@ import {
   IGrouping,
 } from "@pnp/spfx-controls-react/lib/ListView";
 
-import { useOrders,useUrlQueryParam } from "../../common/hooks";
+import { useOrders, useUrlQueryParam } from "../../common/hooks";
 import { IOrdersListItem } from "../../common/model";
 import EditableText from "../editabletext";
 import { returnToSource } from "../../common/utils";
@@ -25,7 +22,7 @@ import { returnToSource } from "../../common/utils";
 export default memo(function index() {
   const [isFetching, orders, , fetchAllOrders, editOrderPartInfo, , , ,] =
     useOrders();
-  const [sourcePage]= useUrlQueryParam(["Source"]);
+  const [sourcePage] = useUrlQueryParam(["Source"]);
 
   useEffect(() => {
     fetchAllOrders();
@@ -42,8 +39,8 @@ export default memo(function index() {
       displayName: "OrderID",
       isResizable: true,
       sorting: true,
-      minWidth: 0,
-      maxWidth: 65,
+      minWidth: 65,
+      maxWidth: 200,
       render: (rowitem: IOrdersListItem) => {
         return <EditableText value={rowitem.PPAPOrderNumber} />;
       },
@@ -53,8 +50,8 @@ export default memo(function index() {
       displayName: "PartID",
       isResizable: true,
       sorting: true,
-      minWidth: 0,
-      maxWidth: 65,
+      minWidth: 65,
+      maxWidth: 200,
       render: (rowitem: IOrdersListItem) => {
         return <EditableText value={rowitem.ItemNbr} />;
       },
@@ -64,8 +61,8 @@ export default memo(function index() {
       displayName: "Item Name",
       isResizable: true,
       sorting: true,
-      minWidth: 0,
-      maxWidth: 200,
+      minWidth: 200,
+      maxWidth: 500,
       render: (rowitem: IOrdersListItem) => {
         return <EditableText value={rowitem.ItemNm} />;
       },
@@ -75,8 +72,8 @@ export default memo(function index() {
       displayName: "Planned Week",
       isResizable: true,
       sorting: true,
-      minWidth: 0,
-      maxWidth: 85,
+      minWidth: 135,
+      maxWidth: 200,
       render: useCallback(
         (rowitem: IOrdersListItem) => {
           return (
@@ -88,7 +85,7 @@ export default memo(function index() {
                   PPAPplannedweek: newValue,
                 })
               }
-              width={80}
+              width={130}
               editable={true}
               placeholder="eg. 202312"
             />
@@ -102,8 +99,8 @@ export default memo(function index() {
       displayName: "Part Weight Code",
       isResizable: true,
       sorting: true,
-      minWidth: 0,
-      maxWidth: 85,
+      minWidth: 135,
+      maxWidth: 200,
       render: (rowitem: IOrdersListItem) => {
         return <EditableText value={rowitem.PPAPPartWeightCode} />;
       },
@@ -113,8 +110,8 @@ export default memo(function index() {
       displayName: "Part Weight",
       isResizable: true,
       sorting: true,
-      minWidth: 0,
-      maxWidth: 65,
+      minWidth: 135,
+      maxWidth: 200,
       render: (rowitem: IOrdersListItem) => {
         return <EditableText value={rowitem.PPAPPartWeight} />;
       },
@@ -124,8 +121,8 @@ export default memo(function index() {
       displayName: "SQE Name",
       isResizable: true,
       sorting: true,
-      minWidth: 0,
-      maxWidth: 150,
+      minWidth: 150,
+      maxWidth: 350,
       render: (rowitem: IOrdersListItem) => {
         return <EditableText value={rowitem.SQANm} />;
       },
@@ -135,8 +132,8 @@ export default memo(function index() {
       displayName: "PARMA Name",
       isResizable: true,
       sorting: true,
-      minWidth: 0,
-      maxWidth: 150,
+      minWidth: 150,
+      maxWidth: 350,
       render: (rowitem: IOrdersListItem) => {
         return <EditableText value={rowitem.PARMANm} />;
       },
@@ -152,66 +149,44 @@ export default memo(function index() {
     ];
   }, []);
 
-  const rootContainerStyle: React.CSSProperties = React.useMemo(() => {
-    return {
-      height: 680,
-      width: 1000,
-    };
-  }, []);
-
   //#endregion
   return (
-    <div>
-      <Separator alignContent="start" style={{ width: 1000 }}>
+    <div style={{ height: "640px" }}>
+      <div style={{ height: "5%", lineHeight: "1em" }}>
         <h2>Click PPAP planned week column from below to update:</h2>
-      </Separator>
-      {isFetching ? <Spinner /> : ""}
-      <Stack verticalFill grow style={rootContainerStyle}>
-        <Stack.Item
-          grow
-          style={{ position: "relative", backgroundColor: "white" }}
-        >
-          <ScrollablePane scrollbarVisibility={ScrollbarVisibility.auto}>
-            {orders.length === 0 && (
-              <div
-                style={{
-                  fontSize: "16px",
-                  textAlign: "center",
-                  fontWeight: "450",
-                }}
-              >
-                No items
-              </div>
-            )}
-            <ListView
-              items={orders}
-              viewFields={viewFields}
-              groupByFields={groupByFields}
-              compact={false}
-              selectionMode={SelectionMode.none}
-              filterPlaceHolder="Search..."
-              showFilter={true}
-            />
-          </ScrollablePane>
-          {isFetching && <Overlay />}
-        </Stack.Item>
-      </Stack>
-      <Stack
-        horizontal
-        verticalAlign="center"
-        wrap
-        styles={{ root: { width: 800 } }}
-        tokens={{
-          childrenGap: "4%",
-          padding: "m 4px",
-        }}
-      >
-        <DefaultButton
-          onClick={() => returnToSource(sourcePage.Source) }
-        >
+      </div>
+      <div style={{ height: "85%", overflow: "scroll" }}>
+        {isFetching ? <Spinner /> : ""}
+
+        {orders.length === 0 && (
+          <div
+            style={{
+              fontSize: "16px",
+              textAlign: "center",
+              fontWeight: "450",
+            }}
+          >
+            No items
+          </div>
+        )}
+        <Stack style={{ width: 1000 }}><ListView
+          items={orders}
+          viewFields={viewFields}
+          groupByFields={groupByFields}
+          compact={false}
+          selectionMode={SelectionMode.none}
+          filterPlaceHolder="Search..."
+          showFilter={true}
+          //listClassName="plannedWeekLv"
+          />
+        {isFetching !== 0 && <Overlay />}</Stack>
+        
+      </div>
+      <div style={{ height: "10%", lineHeight: "4em" }}>
+        <DefaultButton onClick={() => returnToSource(sourcePage.Source)}>
           Close
         </DefaultButton>
-      </Stack>
+      </div>
     </div>
   );
 });

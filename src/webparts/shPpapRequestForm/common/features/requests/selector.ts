@@ -21,6 +21,15 @@ export const itemSelector = createSelector(
 );
 
 /**
+ * itemId selector
+ */
+export const itemIdSelector = createSelector(
+  featureStateSelector,
+  (state: IRequestState) => state?.itemId
+);
+
+
+/**
  * listId selector
  */
 export const listIdSelector = createSelector(

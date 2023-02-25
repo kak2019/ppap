@@ -3,6 +3,7 @@ import { FeatureKey } from "../../featureKey";
 import {
   fetchByIdAction,
   addRequestAction,
+  editRequestAction,
   fetchRequestListIdAction,
 } from "./action";
 import { initialState, RequestStatus } from "./requestsSlice";
@@ -17,6 +18,9 @@ const requestSlice = createSlice({
     },
     RequestItemChanged(state, action) {
       state.item = action.payload;
+    },
+    RequestItemIdChanged(state, action) {
+      state.itemId = action.payload;
     },
     RequestListIdChange(state, action) {
       state.listId = action.payload;
@@ -57,10 +61,22 @@ const requestSlice = createSlice({
       .addCase(addRequestAction.rejected, (state, action) => {
         state.statue = RequestStatus.Failed;
         state.message = action.payload as string;
+      })
+      .addCase(editRequestAction.pending, (state, action) => {
+        state.statue = RequestStatus.Loading;
+      })
+      .addCase(editRequestAction.fulfilled, (state, action) => {
+        const { request } = action.meta.arg;
+        state.statue = RequestStatus.Idle;
+        state.item = request;
+      })
+      .addCase(editRequestAction.rejected, (state, action) => {
+        state.statue = RequestStatus.Failed;
+        state.message = action.payload as string;
       });
   },
 });
 
-export const { RequestStatusChanged, RequestItemChanged, RequestListIdChange } =
+export const { RequestStatusChanged, RequestItemChanged, RequestItemIdChanged, RequestListIdChange } =
   requestSlice.actions;
 export const requestReducer = requestSlice.reducer;

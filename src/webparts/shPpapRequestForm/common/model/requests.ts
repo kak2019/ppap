@@ -11,4 +11,7 @@ export interface IRequestListItem{
     folderView?: string;
     approvalStatus?: string;
     requestPartJSON?: string;
+    PartName?: string;
+    ParmaID?: string;
+    ManufactorySQE?: string;
 }

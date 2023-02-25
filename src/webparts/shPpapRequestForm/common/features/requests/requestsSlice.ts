@@ -12,6 +12,7 @@ export const REQUESTSCONST = Object.freeze({
 
 export interface IRequestState {
   item: IRequestListItem;
+  itemId: string;
   listId: string;
   statue: RequestStatus;
   message: string;
@@ -19,6 +20,7 @@ export interface IRequestState {
 
 export const initialState: IRequestState = {
   item: {},
+  itemId: "-1",
   listId: "",
   statue: RequestStatus.Idle,
   message: "",
