@@ -4,5 +4,6 @@ export interface IShPpapRequestFormProps {
   environmentMessage: string;
   hasTeamsContext: boolean;
   userDisplayName: string;
-  context:any
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  context: any;
 }

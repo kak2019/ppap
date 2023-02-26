@@ -2,14 +2,15 @@ import * as React from "react";
 import styles from "./ListView.module.scss";
 import { IShPpapRequestFormWebPartProps } from "./IListViewProps";
 import { escape } from "@microsoft/sp-lodash-subset";
-import { IconButton, Link, PrimaryButton, TextField } from "office-ui-fabric-react";
+import { DetailsRow, IconButton, IDetailsRowProps, IDetailsRowStyles, Link, PrimaryButton, TextField } from "office-ui-fabric-react";
 import { getSP } from "../../../common/pnpjsConfig";
 import { SPFI, spfi } from "@pnp/sp";
 import { ListView, IViewField, SelectionMode, GroupOrder, IGrouping } from "@pnp/spfx-controls-react/lib/ListView";
 import { Pagination } from "@pnp/spfx-controls-react/lib/pagination";
-//import { Icon } from '@fluentui/react/lib/Icon';
+
 import { Icon } from 'office-ui-fabric-react/lib/Icon';
-//import { Renderdemo } from '../../UploadFile/Renderdemo'
+import { Item } from "@pnp/sp/items";
+
 
 interface IDocItem {Id:number,Title:string,ItemName:string}
 interface IShPpapRequestFormWebPartState { items: IListItem[], paginatedItems: IListItem[] , selectedItems: any[]}
@@ -140,6 +141,7 @@ const groupByFields: IGrouping[] = [
     order: GroupOrder.ascending  
   },];
 
+ 
 
 export default class ShPpapRequestFormWebPart extends React.Component<IShPpapRequestFormWebPartProps,IShPpapRequestFormWebPartState> {
   private _sp: SPFI;
@@ -185,6 +187,7 @@ export default class ShPpapRequestFormWebPart extends React.Component<IShPpapReq
        selection={this._getSelection.bind(this)}
        showFilter={true}  
        filterPlaceHolder="Search..."  
+    
      />  
    </div>
    <br/>

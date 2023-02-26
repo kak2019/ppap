@@ -7,6 +7,7 @@ import {
 } from '@microsoft/sp-property-pane';
 import { BaseClientSideWebPart } from '@microsoft/sp-webpart-base';
 import { IReadonlyTheme } from '@microsoft/sp-component-base';
+import { initializeIcons } from '@fluentui/react/lib/Icons';
 
 import * as strings from 'ShPpapRequestFormWebPartStrings';
 //import ShPpapRequestForm from './components/ShPpapRequestFormWebPart';
@@ -30,6 +31,7 @@ export default class ShPpapRequestFormWebPart extends BaseClientSideWebPart<IShP
   public render(): void {
     const telemetry = PnPTelemetry.getInstance();
     telemetry.optOut();
+    initializeIcons(/* optional base url */);
     const element: React.ReactElement<IShPpapRequestFormProps> = React.createElement(
       //ShPpapRequestForm,
       ShPpapRequestForm,
