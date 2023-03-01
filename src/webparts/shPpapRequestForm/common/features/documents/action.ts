@@ -67,39 +67,41 @@ const fetchFolders = async (
 
   return Promise.resolve(result);
 };
+const fetchDocuments = async (arg: {
+  folderUrl: string;
+}): Promise<IFileInfo[] | string> => {
+  try {
+    const sp = spfi(getSP());
+    const { folderUrl } = arg;
+    return await sp.web.getFolderByServerRelativePath(folderUrl).files();
+  } catch (err) {
+    return Promise.reject(err.message);
+  }
+};
+
 // Thunk function
 export const fetchAllDocumentSectionsAction = createAsyncThunk(
   `${FeatureKey.DOCUMENTS}/fetchAll`,
   async (arg: { Id: string }): Promise<unknown> => {
-    const sp = spfi(getSP());
-    const rootFolder = await sp.web.lists
-      .getByTitle(DOCUMENTSCONST.LIST_NAME)
-      .rootFolder()
-      .then((r) => r)
-      .catch((err) => err.message);
+    try {
+      const sp = spfi(getSP());
+      const rootFolder = await sp.web.lists
+        .getByTitle(DOCUMENTSCONST.LIST_NAME)
+        .rootFolder();
 
-    const result = await fetchFolders(
-      `${rootFolder.ServerRelativeUrl}/${arg.Id}`
-    );
-    return result;
+      const result = await fetchFolders(
+        `${rootFolder.ServerRelativeUrl}/${arg.Id}`
+      );
+      return result;
+    } catch {
+      return Promise.reject("Error when fetch all document sections");
+    }
   }
 );
 
 export const fetchDocumentsAction = createAsyncThunk(
   `${FeatureKey.DOCUMENTS}/fetchDocuments`,
-  async (arg: { folderUrl: string }): Promise<IFileInfo[] | string> => {
-    const sp = spfi(getSP());
-    const { folderUrl } = arg;
-    return await sp.web
-      .getFolderByServerRelativePath(folderUrl)
-      .files()
-      .then((files) => {
-        return Promise.resolve(files);
-      })
-      .catch((err) => {
-        return Promise.reject(err.message);
-      });
-  }
+  fetchDocuments
 );
 
 export const editJiraNumberAction = createAsyncThunk(
@@ -118,7 +120,7 @@ export const editJiraNumberAction = createAsyncThunk(
         Title: jiraNbr,
       });
 
-      return Promise.resolve(jiraNbr);
+      return jiraNbr;
     } catch (err) {
       return Promise.reject(err.message);
     }
@@ -136,7 +138,7 @@ export const fetchJiraNumberAction = createAsyncThunk(
         .listItemAllFields();
       const { Title } = fields;
 
-      return Promise.resolve(Title);
+      return Title;
     } catch (err) {
       return Promise.reject(err.message);
     }
@@ -157,7 +159,7 @@ export const uploadDocumentAction = createAsyncThunk(
         .getFolderByServerRelativePath(folderUrl)
         .files.addUsingPath(fileNamePath, file, { Overwrite: false });
 
-      return Promise.resolve(arg);
+      return await fetchDocuments({folderUrl});
     } catch (err) {
       return Promise.reject(err.message);
     }
