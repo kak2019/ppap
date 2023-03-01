@@ -3,6 +3,6 @@
  */
 export const FeatureKey = {
   ORDERS: "ORDERS",
-  ATTACHMENTS: "ATTACHMENTS",
+  DOCUMENTS: "DOCUMENTS",
   REQUESTS: "REQUESTS",
 } as const;

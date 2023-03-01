@@ -29,6 +29,12 @@ export default memo(function index() {
   }, []);
 
   const handlePartPlannedWeekChange = (item: IOrdersListItem): void => {
+    let isValid = false;
+    const currentYear = new Date().getFullYear();
+    const weekRegex = new RegExp(currentYear +'[0-5][0-9]');
+    isValid = weekRegex.test(item.PPAPplannedweek);
+    console.log("regex result" + isValid);
+
     editOrderPartInfo({ order: item });
   };
 

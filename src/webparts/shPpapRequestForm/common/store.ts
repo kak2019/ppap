@@ -1,12 +1,14 @@
 import { configureStore } from "@reduxjs/toolkit";
 import { ordersReducer } from "./features/orders";
 import { requestReducer } from './features/requests';
+import { documentReducer } from './features/documents';
 
 
 const store = configureStore({
   reducer: {
     orders: ordersReducer,
     request: requestReducer,
+    documents: documentReducer,
   },
 });
 

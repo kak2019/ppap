@@ -22,6 +22,7 @@ import { useOrders, useRequest, useUrlQueryParam } from "../../common/hooks";
 import { IOrdersListItem, IRequestListItem } from "../../common/model";
 import EditableText from "../editabletext";
 import { returnToSource } from "../../common/utils";
+import { RequestStatus } from "../../common/features/requests";
 
 export default memo(function index() {
   const [
@@ -86,7 +87,7 @@ export default memo(function index() {
     }
   };
 
-  const handleSubmit = async (): Promise<number> => {
+  const handleSubmit = async (): Promise<void> => {
     let itemNbr: string = "";
     let isHeader = true;
     let firstItemName = "";
@@ -107,13 +108,11 @@ export default memo(function index() {
       Status: "Creating",
       requestPartJSON: JSON.stringify(selectedItems),
     };
-    const res = await addRequest({ request: requestNew });
-    if (!res && !isFetchingRequest) {
-      returnToSource(sourcePage.Source);
-      return Promise.resolve(0);
-    } else {
-      return Promise.reject(1);
-    }
+    await addRequest({ request: requestNew }).then(() => {
+      if (isFetchingRequest === RequestStatus.Idle) {
+        returnToSource(sourcePage.Source);
+      }
+    });
   };
   //#region =========styles and templates===========
   const viewFields: IViewField[] = [

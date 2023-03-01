@@ -2,7 +2,7 @@ import { createSlice } from "@reduxjs/toolkit";
 import { FeatureKey } from "../../featureKey";
 import { fetchAllOrdersAction, editOrderPartInfoAction } from "./action";
 import { initialState, OrdersStatus, ordersAdapter } from "./ordersSlice";
-import { IOrdersListItem } from '../../model';
+import { IOrdersListItem } from "../../model";
 
 const ordersSlice = createSlice({
   name: FeatureKey.ORDERS,
@@ -15,13 +15,11 @@ const ordersSlice = createSlice({
       state.statue = action.payload;
     },
     UpdateSelectedItem(state, action) {
-      const {order} =action.payload;
-      state.selectedItems = state.selectedItems.map(item =>{
-        if(item.ID === order.ID)
-          return {...order}
-        else
-          return item
-      })
+      const { order } = action.payload;
+      state.selectedItems = state.selectedItems.map((item) => {
+        if (item.ID === order.ID) return { ...order };
+        else return item;
+      });
     },
     AddSelectedItem(state, action) {
       state.selectedItems.push(action.payload);
@@ -30,7 +28,7 @@ const ordersSlice = createSlice({
       state.selectedItems = state.selectedItems.filter(
         (el) => el.ID !== action.payload
       );
-    }
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -39,7 +37,10 @@ const ordersSlice = createSlice({
       })
       .addCase(fetchAllOrdersAction.fulfilled, (state, action) => {
         state.statue = OrdersStatus.Idle;
-        ordersAdapter.setAll(state, action.payload as readonly IOrdersListItem[]);
+        ordersAdapter.setAll(
+          state,
+          action.payload as readonly IOrdersListItem[]
+        );
       })
       .addCase(fetchAllOrdersAction.rejected, (state, action) => {
         state.statue = OrdersStatus.Failed;
@@ -49,9 +50,22 @@ const ordersSlice = createSlice({
         state.statue = OrdersStatus.Loading;
       })
       .addCase(editOrderPartInfoAction.fulfilled, (state, action) => {
-        const {order}  = action.meta.arg;
+        const { order: item } = action.payload as { order: IOrdersListItem };
         state.statue = OrdersStatus.Idle;
-        ordersAdapter.updateOne(state, { id: order.ID, changes: order });
+        ordersAdapter.updateOne(state, {
+          id: item.ID,
+          changes: {
+            ID: item.ID,
+            PPAPOrderNumber: item.PPAPOrderNumber,
+            ItemNbr: item.ItemNbr,
+            SQANm: item.SQANm,
+            PARMANm: item.PARMANm,
+            ItemNm: item.ItemNm,
+            PPAPPartWeightCode: item.PPAPPartWeightCode,
+            PPAPPartWeight: item.PPAPPartWeight,
+            PPAPplannedweek: item.PPAPplannedweek,
+          } as IOrdersListItem,
+        });
       })
       .addCase(editOrderPartInfoAction.rejected, (state, action) => {
         state.statue = OrdersStatus.Failed;
