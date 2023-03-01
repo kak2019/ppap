@@ -24,84 +24,90 @@ let currentPage = 1;
 let currentYear = new Date().getFullYear();
 const weekRegex = new RegExp(currentYear +'[0-5][0-9]');
 let saveFlag : boolean = false;
-
+let items: any[] = [];
 //const DeleteIcon = () => <Icon iconName="Delete" />;
-const viewFields: IViewField[] = [{  
-  name: "PPAPOrderNumber",  
-  displayName: "OrderID",  
-  isResizable: true,  
-  sorting: true,  
-  minWidth: 0,  
-  maxWidth: 150  
-},  
-{  
-  name: "ItemNbr",  
-  displayName: "PartID",  
-  isResizable: true,  
-  sorting: true,  
-  minWidth: 0,  
-  maxWidth: 200  
-},  
-{  
-  name: "ItemNm",  
-  displayName: "Item Name",  
-  isResizable: true,  
-  sorting: true,  
-  minWidth: 0,  
-  maxWidth: 200  
-},  
-{  
-  name: "PARMANbr",  
-  displayName: "PARMA Number",  
-  isResizable: true,  
-  sorting: true,  
-  minWidth: 0,  
-  maxWidth: 150  
-},
-{  
-  name: "PARMANm",  
-  displayName: "PARMA Name",  
-  isResizable: true,  
-  sorting: true,  
-  minWidth: 0,  
-  maxWidth: 150  
-},
-{  
-  name: "SQACd",  
-  displayName: "SQA Code",  
-  isResizable: true,  
-  sorting: true,  
-  minWidth: 0,  
-  maxWidth: 150  
-},
-{  
-  name: "SQANm",  
-  displayName: "SQA Name",  
-  isResizable: true,  
-  sorting: true,  
-  minWidth: 0,  
-  maxWidth: 150  
-},
-{  
-  name: "PPAPplannedweek",  
-  displayName: "PPAP Planned Week",  
-  isResizable: true,  
-  sorting: true,  
-  minWidth: 0,  
-  maxWidth: 150  
-}
-]; 
 
-
-const groupByFields: IGrouping[] = [  
-  {  
-    name: "PPAPOrderNumber",  
-    order: GroupOrder.ascending  
-  },];
 
 
 export default class ShPpapRequestFormWebPart extends React.Component<IShPpapRequestFormWebPartProps,IShPpapRequestFormWebPartState> {
   private _sp: SPFI;
+   viewFields: IViewField[] = [{  
+    name: "PPAPOrderNumber",  
+    displayName: "OrderID",  
+    isResizable: true,  
+    sorting: true,  
+    minWidth: 0,  
+    maxWidth: 150  
+  },  
+  {  
+    name: "ItemNbr",  
+    displayName: "PartID",  
+    isResizable: true,  
+    sorting: true,  
+    minWidth: 0,  
+    maxWidth: 200  
+  },  
+  {  
+    name: "ItemNm",  
+    displayName: "Item Name",  
+    isResizable: true,  
+    sorting: true,  
+    minWidth: 0,  
+    maxWidth: 200  
+  },  
+  {  
+    name: "PARMANbr",  
+    displayName: "PARMA Number",  
+    isResizable: true,  
+    sorting: true,  
+    minWidth: 0,  
+    maxWidth: 150  
+  },
+  {  
+    name: "PARMANm",  
+    displayName: "PARMA Name",  
+    isResizable: true,  
+    sorting: true,  
+    minWidth: 0,  
+    maxWidth: 150  
+  },
+  {  
+    name: "SQACd",  
+    displayName: "SQA Code",  
+    isResizable: true,  
+    sorting: true,  
+    minWidth: 0,  
+    maxWidth: 150  
+  },
+  {  
+    name: "SQANm",  
+    displayName: "SQA Name",  
+    isResizable: true,  
+    sorting: true,  
+    minWidth: 0,  
+    maxWidth: 150  
+  },
+  {  
+    name: "PPAPplannedweek",  
+    displayName: "PPAP Planned Week",  
+    isResizable: true,  
+    sorting: true,  
+    minWidth: 0,  
+    maxWidth: 150,
+    render: ((item: any, index: number) => {
+      return(
+        <div> <input type="text" value={item.PPAPplannedweek} onChange={(e) => this.updatePlannedWeek(e, item.ID)} ></input></div>
+      )
+    })
+  }
+  ]; 
+  
+  
+   groupByFields: IGrouping[] = [  
+    {  
+      name: "PPAPOrderNumber",  
+      order: GroupOrder.ascending  
+    }];
 
   constructor(props: IShPpapRequestFormWebPartProps) {
     super(props);
@@ -112,6 +118,17 @@ export default class ShPpapRequestFormWebPart extends React.Component<IShPpapReq
     };
 
     this._sp = getSP();
+  }
+  public updatePlannedWeek(e : any, ID: number){
+    let modifiedindex:number; 
+  items.forEach ((item, index) =>{
+    if(item.ID === ID){
+      modifiedindex = index;
+    }
+  });
+  items[modifiedindex].PPAPplannedweek = e.target.value;
+    console.log(items);
+    this.setState({items: items})
   }
 
   public render(): React.ReactElement<IShPpapRequestFormWebPartProps> {
@@ -143,8 +160,8 @@ export default class ShPpapRequestFormWebPart extends React.Component<IShPpapReq
   <div className={styles.listView}>  
      <ListView  
        items={this.state.paginatedItems}  
-       viewFields={viewFields}  
-       groupByFields={groupByFields}  
+       viewFields={this.viewFields}  
+       groupByFields={this.groupByFields}  
        compact={true}  
        selectionMode={SelectionMode.multiple}  
        selection={this._getSelection.bind(this)}
@@ -166,46 +183,6 @@ export default class ShPpapRequestFormWebPart extends React.Component<IShPpapReq
    </div>
    <br></br>
    
-    <div className={styles.header}>
-      Selected items:
-      <hr></hr>
-    </div>
-   {this.state.selectedItems.length > 0 && <div className= {styles.selectedItems}>
-        <table >
-          <thead >
-            <tr> <th> Order ID</th> 
-              <th>Part ID</th>
-                <th>Item Name</th>
-                <th>PARMA Name</th>
-                <th>PPAP Planned Week</th>
-            </tr>
-          </thead>
-        
-         {this.state.selectedItems.map((item, index) => (  
-              <tr data-index={index}>  
-                <td>{item.PPAPOrderNumber}</td>  
-                <td>{item.ItemNbr}</td>  
-                <td>{item.ItemNm}</td>
-                <td>{item.PARMANm}</td>  
-                <td>  <input className={styles.inputFields}
-                  name="weight"
-                  type="text"
-                  onChange={(e) => this.onChangeWeek(e, item.ID, index)}
-                  placeholder="eg. 202312"
-                /> </td>
-                
-                <td>
-                 <IconButton onClick={() => this.deleteItem( index)} iconProps={ {iconName: "Delete"}}/>
-                </td>
-              </tr>  
-            ))}
-        </table>
-        </div>
-        }
-     {this.state.selectedItems.length === 0 && <div className={styles.emptyMessage}>
-        No items selected
-      </div>}
-        <br></br>
         <div>
           <PrimaryButton className={styles.button} disabled = {!saveFlag} onClick={() => this.updateItems()}>Save</PrimaryButton>
         </div>
@@ -242,8 +219,9 @@ export default class ShPpapRequestFormWebPart extends React.Component<IShPpapReq
       this.setState({selectedItems: unique});
       console.log(this.state.selectedItems);
     }
-    else{unique[index].Flag = false;
-      alert('Enter valid format, year followed by week number eg. 202341')
+    else{
+      unique[index].Flag = false;
+      //alert('Enter valid format, year followed by week number eg. 202341');
     }
     this.checkSave();
   }
@@ -294,7 +272,7 @@ export default class ShPpapRequestFormWebPart extends React.Component<IShPpapReq
     const sp = spfi(this._sp);
     try {
       const response =  await sp.web.lists.getByTitle("GPS Orders").items.select("ID", "ItemNm", "ItemNbr","PARMANbr","PARMANm","SQANm","SQACd","PPAPOrderNumber","PPAPplannedweek").top(30)();
-      const items = response.map((item:IListItem) => {
+     items = response.map((item:IListItem) => {
         return {
           ID:item.ID,
           PPAPOrderNumber:item.PPAPOrderNumber,
