@@ -14,7 +14,7 @@ trigger:
 stages:
   - stage: 'build_DEV'
     condition: eq(variables['Build.SourceBranch'], 'refs/heads/develop')
-    displayName: build_test
+    displayName: build_DEV
     jobs:
       - template: ./azure-pipelines-build.yml
         parameters:
@@ -30,9 +30,9 @@ stages:
           target_environment: 'PPAP DEV'
           variable_group_name: 'PPAP DEV'
 
-  - stage: 'build_Test'
+  - stage: 'build_TEST'
     condition: and(succeeded(), startsWith(variables['Build.SourceBranch'], 'refs/heads/feature'))
-    displayName: build_dev
+    displayName: build_TEST
     jobs:
       - template: ./azure-pipelines-build.yml
         parameters:
@@ -40,7 +40,7 @@ stages:
           variable_group_name: 'PPAP TEST'
   
   - stage: 'deploy_TEST'
-    condition: and(succeeded('build_Test'), startsWith(variables['Build.SourceBranch'], 'refs/heads/feature') )
+    condition: and(succeeded('build_TEST'), startsWith(variables['Build.SourceBranch'], 'refs/heads/feature') )
     jobs:
       - template: ./azure-pipelines-deploy.yml
         parameters:
