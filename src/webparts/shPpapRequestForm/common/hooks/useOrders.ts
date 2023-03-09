@@ -12,13 +12,13 @@ import {
   RemoveSelectedItemById,
 } from "../features/orders";
 import { useAppSelector, useAppDispatch } from "./useApp";
-import { IOrdersListItem } from "../model";
+import { IOrdersListItem, ISelectedOrdersListItem } from "../model";
 
 
 type OrdersOperators = [
   isFetching: OrdersStatus,
   orders: IOrdersListItem[],
-  selectedItems: IOrdersListItem[],
+  selectedItems: ISelectedOrdersListItem[],
   fetchAllOrders: () => void,
   editOrderPartInfo: (arg: {order: IOrdersListItem} ) => void,
   updateSelectedItem: (arg: {order: IOrdersListItem}) => void,

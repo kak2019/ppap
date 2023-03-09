@@ -1,5 +1,5 @@
 import * as React from "react";
-import { memo, useEffect, useCallback, useMemo, useState } from "react";
+import { memo, useEffect, useCallback, useMemo, useState, useContext } from "react";
 import {
   Spinner,
   PrimaryButton,
@@ -19,10 +19,12 @@ import {
 import { AnimatedDialog } from "@pnp/spfx-controls-react/lib/AnimatedDialog";
 
 import { useOrders, useRequest, useUrlQueryParam } from "../../common/hooks";
-import { IOrdersListItem, IRequestListItem } from "../../common/model";
+import { IOrdersListItem, IRequestListItem, ISelectedOrdersListItem } from "../../common/model";
 import EditableText from "../editabletext";
 import { returnToSource } from "../../common/utils";
 import { RequestStatus } from "../../common/features/requests";
+import { Dialog } from "@microsoft/sp-dialog";
+import AppContext from "../../common/AppContext";
 
 export default memo(function index() {
   const [
@@ -37,20 +39,27 @@ export default memo(function index() {
   ] = useOrders();
   const [isFetchingRequest, , , , addRequest, , , , , ,] = useRequest();
   const [sourcePage] = useUrlQueryParam(["Source"]);
-
+  const ctx = useContext(AppContext);
+  const userEmail = ctx.context._pageContext._user.email;
   const selectedItemIds = useMemo(
     () => selectedItems.map((item) => item.ID),
     [selectedItems]
   );
   const [isStep1, setIsStep1] = useState(true);
   const [showAnimatedDialog, setShowAnimatedDialog] = useState(false);
-
+  const [supplierOrders, setSupplierOrders] = useState <IOrdersListItem[]>([]);
+  
   useEffect(() => {
     fetchAllOrders();
+    //setSupplierOrders([...(orders.filter((item) => item.SupplierEmail === userEmail))])
   }, []);
-
+  let filtered = [...(orders.filter((item) => item.SupplierEmail === userEmail))];
+   // setSupplierOrders(filtered);
+  console.log(filtered);
+  
+  console.log(supplierOrders);
   const _getSelection = useCallback(
-    (items: IOrdersListItem[]): void => {
+    (items: ISelectedOrdersListItem[]): void => {
       const itemIds = items.map((el) => el.ID);
       if (itemIds.sort().toString() === selectedItemIds.sort().toString())
         return;
@@ -71,14 +80,50 @@ export default memo(function index() {
     [selectedItemIds]
   );
 
-  const handlePartWeightCodeChange = (item: IOrdersListItem): void => {
+  const handlePartWeightCodeChange = (item: ISelectedOrdersListItem): void => {
     //editOrderPartInfo({order:item});
+    item.wcFlag = true;
     updateSelectedItem({ order: item });
   };
-  const handlePartWeightChange = (item: IOrdersListItem): void => {
+  const handlePartWeightChange = (item: ISelectedOrdersListItem): void => {
     //editOrderPartInfo({order:item});
+    item.weightFlag = true;
     updateSelectedItem({ order: item });
+
   };
+  const handleRevisionCodeChange = (item: ISelectedOrdersListItem): void => {
+    //editOrderPartInfo({order:item});
+    //let isValid = false;
+    const rcRegex = new RegExp('^[ABCP][0-9][0-9]');
+    const rcValid = rcRegex.test(item.RevisionCode);
+    console.log("regex result" + rcValid);
+    if(rcValid && (item.ItemValidIssue == item.RevisionCode)){
+      item.rcFlag = true;
+      updateSelectedItem({ order: item });
+    }
+   else{
+    Dialog.alert("Revision code does not match with Item valid issue, please enter correct code.")
+   }
+
+  };
+  const handleDrawingVersionChange = (item: ISelectedOrdersListItem): void => {
+    //editOrderPartInfo({order:item});
+    /*const dvRegex = new RegExp('[0-9][0-9]');
+    const dvValid = dvRegex.test(item.DrawingVersion);
+    if(dvValid){
+      updateSelectedItem({ order: item });
+    }
+    else{
+      Dialog.alert("Warning!! \nDrawing version is not same as GPS drawing number")
+    }*/
+    item.dvFlag = true;
+      updateSelectedItem({ order: item });
+      if(item.DrawingVersion !== item.GPSDrawingNumber){
+        Dialog.alert("Warning!! \nDrawing version is not same as GPS drawing number")
+      }
+      
+  };
+
   const handlePrevStep = (): void => {
     if (selectedItems.length > 0) {
       setShowAnimatedDialog(true);
@@ -87,10 +132,22 @@ export default memo(function index() {
     }
   };
 
+  const handleNextStep =(): void => {
+    const SQE = selectedItems[0].SQANm;
+    const sameSQE =  selectedItems.every(x => x.SQANm === SQE);
+    
+    if(sameSQE){
+      setIsStep1(false);}
+    else{
+      Dialog.alert("Only orders with same SQA could be grouped together. Please check if all selected orders have same SQA");
+      }
+  }
+
   const handleSubmit = async (): Promise<void> => {
     let itemNbr: string = "";
     let isHeader = true;
     let firstItemName = "";
+    let flag = true;
     selectedItems.forEach((order) => {
       editOrderPartInfo({ order: order });
       if (!isHeader) {
@@ -100,19 +157,26 @@ export default memo(function index() {
         firstItemName = order.ItemNm;
       }
       itemNbr += order.ItemNbr;
+      flag = flag && order.rcFlag && order.dvFlag && order.wcFlag && order.weightFlag;
     });
     // Create request
-    const requestNew: IRequestListItem = {
-      PartName: firstItemName,
-      itemNumber: itemNbr,
-      Status: "Creating",
-      requestPartJSON: JSON.stringify(selectedItems),
-    };
-    await addRequest({ request: requestNew }).then(() => {
-      if (isFetchingRequest === RequestStatus.Idle) {
-        returnToSource(sourcePage.Source);
-      }
-    });
+    if(flag){
+      const requestNew: IRequestListItem = {
+        PartName: firstItemName,
+        itemNumber: itemNbr,
+        Status: "Creating",
+        requestPartJSON: JSON.stringify(selectedItems),
+      };
+      await addRequest({ request: requestNew }).then(() => {
+        if (isFetchingRequest === RequestStatus.Idle) {
+          returnToSource(sourcePage.Source);
+        }
+      });
+    }
+    else{
+      Dialog.alert("Please check if all the inputs are filled correctly");
+    }
+
   };
   //#region =========styles and templates===========
   const viewFields: IViewField[] = [
@@ -141,6 +205,62 @@ export default memo(function index() {
       maxWidth: 200,
     },
     {
+      name: "SQANm",
+      displayName: "SQE Name",
+      isResizable: true,
+      sorting: true,
+      minWidth: 0,
+      maxWidth: 150,
+    },
+    {
+      name: "PARMANm",
+      displayName: "PARMA Name",
+      isResizable: true,
+      sorting: true,
+      minWidth: 0,
+      maxWidth: 150,
+    },
+    {  
+      name: "SQASection",  
+      displayName: "SQA Section",  
+      isResizable: true,  
+      sorting: true,  
+      minWidth: 0,  
+      maxWidth: 150  
+    },
+    {  
+      name: "SQACd",  
+      displayName: "SQA Code",  
+      isResizable: true,  
+      sorting: true,  
+      minWidth: 0,  
+      maxWidth: 150  
+    },
+    {  
+      name: "PPAPorderdate",  
+      displayName: "PPAP Order Date",  
+      isResizable: true,  
+      sorting: true,  
+      minWidth: 0,  
+      maxWidth: 150  
+    },
+    {  
+      name: "PPAPOrderarrweek",  
+      displayName: "PPAP Order Arrival week",  
+      isResizable: true,  
+      sorting: true,  
+      minWidth: 0,  
+      maxWidth: 150  
+    },
+    {  
+      name: "PPAP_x002d_Plan_x002d_Y",  
+      displayName: "PPAP-Paln-Y",  
+      isResizable: true,  
+      sorting: true,  
+      minWidth: 0,  
+      maxWidth: 150  
+    },
+    {
       name: "PPAPplannedweek",
       displayName: "Planned Week",
       isResizable: true,
@@ -164,22 +284,7 @@ export default memo(function index() {
       minWidth: 0,
       maxWidth: 65,
     },
-    {
-      name: "SQANm",
-      displayName: "SQE Name",
-      isResizable: true,
-      sorting: true,
-      minWidth: 0,
-      maxWidth: 150,
-    },
-    {
-      name: "PARMANm",
-      displayName: "PARMA Name",
-      isResizable: true,
-      sorting: true,
-      minWidth: 0,
-      maxWidth: 150,
-    },
+    
   ];
 
   const selViewFields: IViewField[] = [
@@ -190,7 +295,7 @@ export default memo(function index() {
       sorting: true,
       minWidth: 0,
       maxWidth: 65,
-      render: (rowitem: IOrdersListItem) => {
+      render: (rowitem: ISelectedOrdersListItem) => {
         return <EditableText value={rowitem.PPAPOrderNumber} />;
       },
     },
@@ -201,7 +306,7 @@ export default memo(function index() {
       sorting: true,
       minWidth: 0,
       maxWidth: 65,
-      render: (rowitem: IOrdersListItem) => {
+      render: (rowitem: ISelectedOrdersListItem) => {
         return <EditableText value={rowitem.ItemNbr} />;
       },
     },
@@ -212,7 +317,7 @@ export default memo(function index() {
       sorting: true,
       minWidth: 0,
       maxWidth: 200,
-      render: (rowitem: IOrdersListItem) => {
+      render: (rowitem: ISelectedOrdersListItem) => {
         return <EditableText value={rowitem.ItemNm} />;
       },
     },
@@ -223,7 +328,7 @@ export default memo(function index() {
       sorting: true,
       minWidth: 0,
       maxWidth: 85,
-      render: (rowitem: IOrdersListItem) => {
+      render: (rowitem: ISelectedOrdersListItem) => {
         return <EditableText value={rowitem.PPAPplannedweek} />;
       },
     },
@@ -235,7 +340,7 @@ export default memo(function index() {
       minWidth: 0,
       maxWidth: 85,
       render: useCallback(
-        (rowitem: IOrdersListItem) => {
+        (rowitem: ISelectedOrdersListItem) => {
           return (
             <EditableText
               value={rowitem.PPAPPartWeightCode}
@@ -262,7 +367,7 @@ export default memo(function index() {
       minWidth: 0,
       maxWidth: 65,
       render: useCallback(
-        (rowitem: IOrdersListItem) => {
+        (rowitem: ISelectedOrdersListItem) => {
           return (
             <EditableText
               value={rowitem.PPAPPartWeight}
@@ -282,13 +387,67 @@ export default memo(function index() {
       ),
     },
     {
+      name: "RevisionCode",
+      displayName: "Revision Code",
+      isResizable: true,
+      sorting: true,
+      minWidth: 0,
+      maxWidth: 65,
+      render: useCallback(
+        (rowitem: ISelectedOrdersListItem) => {
+          return (
+            <EditableText
+              value={rowitem.RevisionCode}
+              onChange={(newValue: string): void =>
+                handleRevisionCodeChange({
+                  ...rowitem,
+                  RevisionCode: newValue,
+                })
+              }
+              width={60}
+              editable={true}
+              placeholder="Type revision code"
+            />
+          );
+        },
+        [selectedItemIds]
+      ),
+    },
+    {
+      name: "DrawingVersion",
+      displayName: "Drawing Version",
+      isResizable: true,
+      sorting: true,
+      minWidth: 0,
+      maxWidth: 65,
+      render: useCallback(
+        (rowitem: ISelectedOrdersListItem) => {
+          return (
+            <EditableText
+              value={rowitem.DrawingVersion}
+              onChange={(newValue: string): void =>
+                handleDrawingVersionChange({
+                  ...rowitem,
+                  DrawingVersion: newValue,
+                })
+              }
+              width={60}
+              editable={true}
+              placeholder="Type drawing version"
+            />
+          );
+        },
+        [selectedItemIds]
+      ),
+    },
+    {
       name: "SQANm",
       displayName: "SQE Name",
       isResizable: true,
       sorting: true,
       minWidth: 0,
       maxWidth: 150,
-      render: (rowitem: IOrdersListItem) => {
+      render: (rowitem: ISelectedOrdersListItem) => {
         return <EditableText value={rowitem.SQANm} />;
       },
     },
@@ -299,7 +458,7 @@ export default memo(function index() {
       sorting: true,
       minWidth: 0,
       maxWidth: 150,
-      render: (rowitem: IOrdersListItem) => {
+      render: (rowitem: ISelectedOrdersListItem) => {
         return <EditableText value={rowitem.PARMANm} />;
       },
     },
@@ -366,7 +525,7 @@ export default memo(function index() {
             <Stack style={{ width: 1000 }}>
               {isFetching !== 0 || isFetchingRequest !== 0 ? <Spinner /> : null}
               <ListView
-                items={orders}
+                items={filtered}
                 viewFields={viewFields}
                 groupByFields={groupByFields}
                 compact={true}
@@ -425,7 +584,7 @@ export default memo(function index() {
           </DefaultButton>
         )}{" "}
         {isStep1 && (
-          <DefaultButton disabled={!isStep1} onClick={() => setIsStep1(false)}>
+          <DefaultButton disabled={!isStep1} onClick={ handleNextStep}>
             Next Step
           </DefaultButton>
         )}{" "}

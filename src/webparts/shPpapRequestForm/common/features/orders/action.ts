@@ -4,6 +4,7 @@ import { FeatureKey } from "../../featureKey";
 import { IOrdersListItem } from "../../model";
 import { getSP } from "../../pnpjsConfig";
 import { ORDERSCONST } from "./ordersSlice";
+import "@pnp/sp/items/get-all";
 
 // Thunk function
 export const fetchAllOrdersAction = createAsyncThunk(
@@ -22,9 +23,20 @@ export const fetchAllOrdersAction = createAsyncThunk(
         "PPAPOrderNumber",
         "PPAPplannedweek",
         "PPAPPartWeight",
-        "PPAPPartWeightCode"
-      )
-      .top(100)()
+        "PPAPPartWeightCode",
+        "RevisionCode",
+        "DrawingVersion",
+        "ItemValidIssue",
+        "GPSDrawingNumber",    
+        "SQASection", 
+        "SQACd", 
+        "PPAPorderdate", 
+        "PPAPOrderarrweek", 
+        "PPAPapprovalweek", 
+        "PPAP_x002d_Plan_x002d_Y",
+        "SupplierEmail"
+        ).getAll
+      ()
       .then((response) =>
         response.map(
           (item: IOrdersListItem) =>
@@ -38,6 +50,11 @@ export const fetchAllOrdersAction = createAsyncThunk(
               PPAPPartWeightCode: item.PPAPPartWeightCode,
               PPAPPartWeight: item.PPAPPartWeight,
               PPAPplannedweek: item.PPAPplannedweek,
+              DrawingVersion: item.DrawingVersion,
+              RevisionCode: item.RevisionCode,
+              ItemValidIssue: item.ItemValidIssue,
+              GPSDrawingNumber: item.GPSDrawingNumber,
+              SupplierEmail: item.SupplierEmail
             } as IOrdersListItem)
         )
       );
@@ -63,6 +80,8 @@ export const editOrderPartInfoAction = createAsyncThunk(
         PPAPplannedweek: order.PPAPplannedweek,
         PPAPPartWeight: order.PPAPPartWeight,
         PPAPPartWeightCode: order.PPAPPartWeightCode,
+        DrawingVersion: order.DrawingVersion,
+        RevisionCode: order.RevisionCode
       })
       .then(async () => await list.items.getById(+order.ID)());
       return { order: result };

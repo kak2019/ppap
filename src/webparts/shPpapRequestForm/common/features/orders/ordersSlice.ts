@@ -2,7 +2,7 @@ import {
   createEntityAdapter,
   EntityState,
 } from "@reduxjs/toolkit";
-import { IOrdersListItem } from "../../model";
+import { IOrdersListItem, ISelectedOrdersListItem } from "../../model";
 
 
 
@@ -26,7 +26,7 @@ export const ORDERSCONST = Object.freeze({
 
 export interface IOrderState extends EntityState<IOrdersListItem> {
   itemsfilter: ItemsFilters;
-  selectedItems:IOrdersListItem[];
+  selectedItems:ISelectedOrdersListItem[];
   statue: OrdersStatus;
   message: string;
 }

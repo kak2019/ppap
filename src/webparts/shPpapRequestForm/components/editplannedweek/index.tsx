@@ -1,41 +1,66 @@
 import * as React from "react";
-import { memo, useEffect, useCallback } from "react";
+import { memo, useEffect, useCallback, useState, useContext } from "react";
 import {
   Spinner,
   Stack,
   Overlay,
   DefaultButton,
+  DialogFooter,
+  PrimaryButton,
+  DialogType
 } from "office-ui-fabric-react";
 import {
   ListView,
   IViewField,
   SelectionMode,
   GroupOrder,
-  IGrouping,
+  IGrouping
+  
 } from "@pnp/spfx-controls-react/lib/ListView";
 
 import { useOrders, useUrlQueryParam } from "../../common/hooks";
 import { IOrdersListItem } from "../../common/model";
 import EditableText from "../editabletext";
 import { returnToSource } from "../../common/utils";
+import { AnimatedDialog } from "@pnp/spfx-controls-react";
+import { Dialog } from "@microsoft/sp-dialog";
+import AppContext from "../../common/AppContext";
 
 export default memo(function index() {
   const [isFetching, orders, , fetchAllOrders, editOrderPartInfo, , , ,] =
     useOrders();
   const [sourcePage] = useUrlQueryParam(["Source"]);
-
+  const currentYear = new Date().getFullYear();
+  const [showAnimatedDialog, setshowAnimatedDialog] = useState(false); 
   useEffect(() => {
     fetchAllOrders();
   }, []);
-
+  const animatedDialogContentProps = {
+    type: DialogType.normal,
+    title: "Planned week format is not valid",
+    subText:
+      "Please enter correct format current year followed by week number, eg. " + currentYear +"15" ,
+  };
+  const animatedModalProps = {
+   // isBlocking: true,
+    isDarkOverlay: true,
+  };
+  const ctx = useContext(AppContext);
+  const userEmail = (ctx.context._pageContext._user.email);
   const handlePartPlannedWeekChange = (item: IOrdersListItem): void => {
-    let isValid = false;
-    const currentYear = new Date().getFullYear();
+    //let isValid = false;
+   
     const weekRegex = new RegExp(currentYear +'[0-5][0-9]');
-    isValid = weekRegex.test(item.PPAPplannedweek);
-    console.log("regex result" + isValid);
-
-    editOrderPartInfo({ order: item });
+    let valid = weekRegex.test(item.PPAPplannedweek);
+     
+    console.log("regex result" + valid);
+    if(valid === true){
+      editOrderPartInfo({ order: item });
+    }
+    else{
+      Dialog.alert("Please enter correct format current year followed by week number, eg. " + currentYear +"15" )
+    }
+     
   };
 
   //#region =========styles and templates===========
@@ -188,11 +213,33 @@ export default memo(function index() {
         {isFetching !== 0 && <Overlay />}</Stack>
         
       </div>
+           
       <div style={{ height: "10%", lineHeight: "4em" }}>
         <DefaultButton onClick={() => returnToSource(sourcePage.Source)}>
           Close
         </DefaultButton>
       </div>
+           
+      <AnimatedDialog
+     hidden={!showAnimatedDialog}
+      onDismiss={() => {
+        returnToSource(sourcePage.Source);
+      }}
+      dialogContentProps={animatedDialogContentProps}
+      modalProps={animatedModalProps}
+    >
+      <DialogFooter>
+        <PrimaryButton
+          onClick={() => {
+            returnToSource(sourcePage.Source);
+            setshowAnimatedDialog(false);
+          }}
+          text="Close"
+        />
+      </DialogFooter>
+    </AnimatedDialog>
+     
     </div>
+ 
   );
 });
